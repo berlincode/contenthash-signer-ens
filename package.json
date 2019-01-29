@@ -1,0 +1,49 @@
+{
+  "name": "ipfs-signer",
+  "version": "0.6.0",
+  "description": "Sign ipfs cid hashes and content version (in an ethereum compatile way)",
+  "homepage": "https://github.com/berlincode/ipfs-signer",
+  "license": "MIT",
+  "main": "js/index.js",
+  "author": {
+    "name": "Ulf Bartel",
+    "email": "elastic.code@gmail.com"
+  },
+  "scripts": {
+    "compile": "solcjs --optimize --bin --abi IpfsSigner.sol",
+    "ethlint": "solium --file IpfsSigner.sol",
+    "test": "mocha",
+    "eslint": "eslint ./js/*.js ./test/*.js ./examples/*.js"
+  },
+  "files": [
+    "IpfsSigner.sol",
+    "IpfsSigner_sol_IpfsSigner.abi",
+    "IpfsSigner_sol_IpfsSigner.bin",
+    "js/*.js",
+    "examples/*.js",
+    "LICENSE",
+    "README"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/berlincode/ipfs-signer.git"
+  },
+  "keywords": [
+    "sign",
+    "signature",
+    "smart contract",
+    "ethereum"
+  ],
+  "dependencies": {
+    "minimist": "^1.2.0",
+    "web3": "1.0.0-beta.37"
+  },
+  "devDependencies": {
+    "bs58": "^4.0.1",
+    "eslint": "^5.9.0",
+    "ganache-core": "^2.3.3",
+    "mocha": "^5.2.0",
+    "solc": "0.5.3",
+    "ethlint": "^1.2.2"
+  }
+}
