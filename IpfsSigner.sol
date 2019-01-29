@@ -1,14 +1,25 @@
 /*
- Ipfs Signer Contract
+ Ipfs Signer Registry
 
- Version 0.2.0
+
+ Copyright (c) Ulf Bartel
+
+ Public repository:
+ https://github.com/berlincode/ipfs-signer
+
+ License: MIT
+
+ Contact:
+ elastic.code@gmail.com
+
+ Version 0.3.0
 */
 
 pragma solidity 0.5.3;
 pragma experimental ABIEncoderV2;
 
 
-contract IpfsSigner {
+contract IpfsCidRegistry {
 
     struct Signature {
         uint8 v;
@@ -43,8 +54,9 @@ contract IpfsSigner {
                 ),
                 signature
             ) != addr
-        ) 
+        ){
             return;
+        }
 
         // update only if new version is higher than current version
         if (version > addrToVersion[addr]) {
@@ -55,8 +67,8 @@ contract IpfsSigner {
 
     function get (
         address addr
-    ) 
-        external
+    )
+        public
         view
         returns (bytes memory cid, uint256 version)
     {
@@ -73,7 +85,7 @@ contract IpfsSigner {
         bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 prefixedHash = keccak256(
             abi.encodePacked(
-                prefix, 
+                prefix,
                 _message
             )
         );

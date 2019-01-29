@@ -14,12 +14,14 @@ var argv = minimist(process.argv.slice(2), {boolean: ['quiet']});
 if (argv._.length !== 2){
   console.log('usage:');
   console.log('    generate.js <ipfs-cid> <version-string>');
-  console.log('    -q quiet');
+  console.log('    --quiet : quiet');
+  console.log('');
+  console.log('The private key needs to be supplied vis stdin.');
   console.log('');
   console.log('example (bash):');
-  console.log('    ./generate.js --quiet "$(ipfs add -r -q "$PUBLIC_DIR" 2>/dev/null | tail -1)" v1.2.3 <<< "0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35"');
+  console.log('    ./generate.js --quiet "$(ipfs add -r -q --only-hash "$PUBLIC_DIR" 2>/dev/null | tail -1)" v1.2.3 <<< "0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35" > SIGNATURE');
   process.exit(1);
-} 
+}
 
 const ipfsCid = argv._[0];
 const versionString = argv._[1];

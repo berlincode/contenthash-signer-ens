@@ -6,7 +6,6 @@ const Web3 = require('web3');
 const assert = require('assert');
 const ganache = require('ganache-core');
 const fs = require('fs');
-const bs58 = require('bs58');
 
 var logger = {
   log: function(/*message*/) {
@@ -16,12 +15,12 @@ var logger = {
 
 var contract_interface = JSON.parse(
   fs.readFileSync(
-    'IpfsSigner_sol_IpfsSigner.abi',
+    'IpfsSigner_sol_IpfsCidRegistry.abi',
     {encoding: 'utf8'}
   )
 );
 var contract_bytecode = fs.readFileSync(
-  'IpfsSigner_sol_IpfsSigner.bin',
+  'IpfsSigner_sol_IpfsCidRegistry.bin',
   {encoding: 'utf8'}
 );
 
@@ -29,7 +28,6 @@ var web3;
 var accountSign, accountDefault;
 
 function setup(done){
-  web3 = new Web3();
   const options = {
     logger: logger,
     gasPrice: 20000000000,
@@ -39,7 +37,12 @@ function setup(done){
     ]
   };
 
-  web3.setProvider(ganache.provider(options));
+  //const provider = ganache.provider(options);
+  //web3 = new Web3(provider);
+
+  web3 = new Web3();
+  const provider = ganache.provider(options);
+  web3.setProvider(provider);
 
   accountSign = web3.eth.accounts.privateKeyToAccount('dc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35');
 
@@ -54,8 +57,8 @@ function setup(done){
 describe('Test contract and signature', function() {
   this.timeout(10*1000);
 
-  // IPFS content identifier
-  const cidBase58 = 'QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya';
+  // IPFS content identifier (base56 encoded)
+  const cid = 'QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya';
 
   // only simple version strings like '0.1.2' or '0.1.2.3' are valid
   const versionString = 'v1.2.3';
@@ -100,20 +103,19 @@ describe('Test contract and signature', function() {
 
     it('Calculate signature data', function() {
       const versionHex = ipfsSigner.versionStringToHex(versionString);
-      signatureData = ipfsSigner.signatureDataCreate(web3, accountSign, cidBase58, versionHex);
+      signatureData = ipfsSigner.signatureDataCreate(web3, accountSign, cid, versionHex);
     });
 
-    it('Validate signature data', function(done) {
-      // TODO implement
-      //ipfsSigner.signatureDataValidate();
-      done();
+    it('Validate signature data', function() {
+      var success = ipfsSigner.signatureDataValidate(web3, signatureData);
+      assert.ok(success);
     });
 
-    it('Update', function() {
+    it('Update constract', function() {
       return contractInstance.methods.update(
-        signatureData.cidHex,
+        ipfsSigner.hexFromBase58(signatureData.cid),
         signatureData.version,
-        signatureData.addr, //accountSign,
+        signatureData.address,
         signatureData.sig
       ).send(
         {
@@ -136,8 +138,7 @@ describe('Test contract and signature', function() {
       assert.ok(! cidBn.isZero());
       assert.ok(! version.isZero());
 
-      const cid = bs58.encode(Buffer.from(cidBn.toString(16), 'hex'));
-      assert.equal(cid, cidBase58);
+      assert.equal(ipfsSigner.bnToBase58(cidBn), cid);
     });
 
   });
