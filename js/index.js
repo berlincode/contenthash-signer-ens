@@ -40,6 +40,9 @@
     if (versionString[0] === 'v')
       versionString = versionString.substring(1);
 
+    if (! /^[0-9.]*$/.test(versionString))
+      throw 'invalid char in version';
+
     var fragments = versionString.split('.');
     if (fragments.length > 4)
       throw new Error('too many fragments');
@@ -51,9 +54,11 @@
     var versionBn = web3_utils.toBN(0);
     var i;
     for (i=0 ; i < fragments.length ; i++){
-      // TODO validate >=0 and <= 0xffff
+      var fragmentInt = Number(fragments[i]);
+      if (fragmentInt > 0xffff)
+        throw 'version fragment > 0xffff';
       versionBn = versionBn.mul(web3_utils.toBN('0x10000'));
-      versionBn = versionBn.add(web3_utils.toBN(Number(fragments[i])));
+      versionBn = versionBn.add(web3_utils.toBN(fragmentInt));
     }
     return versionBn;
   }
@@ -140,6 +145,11 @@
     return addr.replace(/^0x/, '').toLowerCase() === signatureData.address.replace(/^0x/, '').toLowerCase();
   }
 
+  
+  function toCid1(cid){
+    return (new Cids(cid)).toV1().toBaseEncodedString('base58btc');
+  }
+
   return {
     versionStringToBn: versionStringToBn,
     cid1HexRawToCid1Base58String: cid1HexRawToCid1Base58String,
@@ -147,6 +157,7 @@
     updateHash: updateHash,
     versionStringToHex: versionStringToHex,
     signatureDataCreate: signatureDataCreate,
-    signatureDataValidate: signatureDataValidate
+    signatureDataValidate: signatureDataValidate,
+    toCid1: toCid1
   };
 }));

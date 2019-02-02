@@ -3,20 +3,19 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
-    <meta name="robots" content="noindex">
     <title>Ipfs-Signer Example</title>
 
     <script type="text/javascript" src="assets/js/require.js"></script>
 
     <style>
-input {
-    height: 18px;
+input[type='text']{ 
     width: 775px;
 }
     </style>
 </head>
 <body>
     <h1>Ipfs-Signer Example</h1>
+    This is the online example of <a href="https://github.com/berlincode/ipfs-signer">https://github.com/berlincode/ipfs-signer</a>
 
     <h2>Sign content</h2>
     <form>
@@ -31,6 +30,10 @@ input {
         <div>
             Version (your custom version):
             <input id="signVersion" value="v1.2.3" placeholder="v1.2.3" type="text">
+        </div>
+        <div>
+            Force CID1 (convert CID to CID1 before signing):
+            <input id="signForceCid1" type="checkbox" value="1" checked>
         </div>
         <button id="signBtn">Sign</button>
     </form>
@@ -101,12 +104,19 @@ require(
       try {
         var web3 = new Web3();
         var accountSign = web3.eth.accounts.privateKeyToAccount('0x' + document.getElementById('signPrivateKey').value.replace(/^0x/,''));
+        var cid = document.getElementById('signCid').value;
+        var versionString = document.getElementById('signVersion').value;
+        var forceCid1 = document.getElementById('signForceCid1').checked;
+
+        if (forceCid1){
+          cid = ipfsSigner.toCid1(cid);
+        }
 
         var signatureData = ipfsSigner.signatureDataCreate(
           web3,
           accountSign,
-          document.getElementById('signCid').value,
-          ipfsSigner.versionStringToHex(document.getElementById('signVersion').value)
+          cid,
+          ipfsSigner.versionStringToHex(versionString)
         );
 
         document.getElementById('signResult').value = JSON.stringify(signatureData, null, 2);
