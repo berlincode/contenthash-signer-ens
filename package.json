@@ -1,7 +1,7 @@
 {
   "name": "ipfs-signer",
-  "version": "1.0.0",
-  "description": "Sign ipfs cid hashes and content version (in an ethereum compatile way)",
+  "version": "2.0.0",
+  "description": "Sign ipfs cid hashes and content version (in an ethereum compatible way)",
   "homepage": "https://github.com/berlincode/ipfs-signer",
   "license": "MIT",
   "main": "js/index.js",
@@ -13,7 +13,8 @@
     "compile": "solcjs --optimize --bin --abi IpfsSigner.sol",
     "ethlint": "solium --file IpfsSigner.sol",
     "test": "mocha",
-    "eslint": "eslint ./js/*.js ./test/*.js ./examples/*.js"
+    "eslint": "eslint ./js/*.js ./test/*.js ./examples/*.js ./*.html",
+    "build": "rm -rf dist && mkdir dist && cp test.html dist && cp -r js dist && cp -r assets dist && mkdir -p dist/node_modules/cids/dist/ && cp node_modules/cids/dist/index.js dist/node_modules/cids/dist/"
   },
   "files": [
     "IpfsSigner.sol",
@@ -35,14 +36,17 @@
     "ethereum"
   ],
   "dependencies": {
+    "cids": "^0.5.7",
     "ethereumjs-util": "^6.0.0",
-    "minimist": "^1.2.0",
     "web3": "1.0.0-beta.37"
   },
   "devDependencies": {
-    "bs58": "^4.0.1",
-    "eslint": "^5.9.0",
+    "eslint": "5.10.0",
+    "eslint-plugin-html": "^5.0.0",
+    "eslint-plugin-ie11": "^1.0.0",
     "ganache-core": "^2.3.3",
+    "gh-pages": "^2.0.1",
+    "minimist": "^1.2.0",
     "mocha": "^5.2.0",
     "solc": "0.5.3",
     "ethlint": "^1.2.2"

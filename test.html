@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html class="" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <title>Ipfs-Signer Example</title>
+
+    <script type="text/javascript" src="assets/js/require.js"></script>
+
+    <style>
+input {
+    height: 18px;
+    width: 775px;
+}
+    </style>
+</head>
+<body>
+    <h1>Ipfs-Signer Example</h1>
+
+    <h2>Sign content</h2>
+    <form>
+        <div>
+            Private key:
+            <input id="signPrivateKey" value="0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35" placeholder="0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35" type="text">
+        </div>
+        <div>
+            IPFS CID/hash:
+            <input id="signCid" value="zdj7WmYPgTE1BKJkysxAfUzgC4f4RGaQDLzZyRzPFfqwFSQ9W" placeholder="zdj7WmYPgTE1BKJkysxAfUzgC4f4RGaQDLzZyRzPFfqwFSQ9W" type="text">
+        </div>
+        <div>
+            Version (your custom version):
+            <input id="signVersion" value="v1.2.3" placeholder="v1.2.3" type="text">
+        </div>
+        <button id="signBtn">Sign</button>
+    </form>
+    Result:<br/>
+    <textarea id="signResult" rows="10" cols="100"></textarea>
+    <hr/>
+
+    <h2>Validate signature</h2>
+    <form>
+        <div>
+            <textarea id="validateSignature" rows="10" cols="100">{
+  "cid": "zdj7WmYPgTE1BKJkysxAfUzgC4f4RGaQDLzZyRzPFfqwFSQ9W",
+  "version": "0x0000000000000000000000000000000000000000000000000001000200030000",
+  "address": "0x384485D74cFBd5289B852824E6D1D8C4b77acab4",
+  "sig": {
+    "v": "0x1c",
+    "r": "0xab59fdd02a63e40b40b29a6bd83a1a7daab2bc27fbae11eaff2173f580db4aca",
+    "s": "0x58bf209ca4ee44aaf4c8965b8510d00fd090205dfd65e19a35572e5001bd5e50"
+  }
+}</textarea>
+        </div>
+        <button id="validateBtn">Validate</button>
+    </form>
+    Result:<br/>
+    <textarea id="validateResult" rows="1" cols="100"></textarea>
+    <hr/>
+
+    <h2>IPFS convert CID to CID0 and CID1 (base58 and hex)</h2>
+    IPFS CID/hash (CID0 or CID1):
+    <form>
+        <div>
+            <input id="convertInputCid" value="QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya" placeholder="QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya" type="text">
+        </div>
+        <button id="convertBtn">Convert</button>
+    </form>
+    Result:<br/>
+    <textarea id="convertResult" rows="6" cols="100"></textarea>
+    <hr/>
+
+    <script>
+
+require.config({
+  paths: {
+    'web3': 'assets/js/web3',
+    'ethereumjs-util': 'assets/js/ethereumjs-util',
+    'ipfsSigner': 'js/index',
+    'cids': 'node_modules/cids/dist/index'
+  }
+});
+
+require(
+  [
+    'ipfsSigner',
+    'web3',
+    'cids'
+  ],
+  function(ipfsSigner, Web3, Cids){
+
+    // cids seems not to have a valid AMD loader so we use Cids from window namespace 
+    Cids = window.Cids;
+
+    document.getElementById('signBtn').onclick = function(evt){
+      evt.preventDefault();
+
+      // clear
+      document.getElementById('signResult').value = '';
+
+      try {
+        var web3 = new Web3();
+        var accountSign = web3.eth.accounts.privateKeyToAccount('0x' + document.getElementById('signPrivateKey').value.replace(/^0x/,''));
+
+        var signatureData = ipfsSigner.signatureDataCreate(
+          web3,
+          accountSign,
+          document.getElementById('signCid').value,
+          ipfsSigner.versionStringToHex(document.getElementById('signVersion').value)
+        );
+
+        document.getElementById('signResult').value = JSON.stringify(signatureData, null, 2);
+      
+      } catch(err) {
+        document.getElementById('signResult').value = 'Error';
+      }
+    };
+
+    document.getElementById('validateBtn').onclick = function(evt){
+      evt.preventDefault();
+
+      // clear
+      document.getElementById('validateResult').value = '';
+
+      try {
+        var web3 = new Web3();
+
+        var success = ipfsSigner.signatureDataValidate(web3, JSON.parse(document.getElementById('validateSignature').value));
+        document.getElementById('validateResult').value = (success? 'Validation success': 'Validation error');
+      
+      } catch (err){
+        document.getElementById('validateResult').value = 'Error';
+      }
+    };
+
+
+    document.getElementById('convertBtn').onclick = function(evt){
+      evt.preventDefault();
+
+      // clear
+      document.getElementById('convertResult').value = '';
+
+      try {
+        var cid = new Cids(document.getElementById('convertInputCid').value);
+
+        document.getElementById('convertResult').value = (
+          'CID (default encoding base58btc)\n' +
+          'CID0: ' + cid.toV0().toBaseEncodedString('base58btc') + '\n' +
+          'CID1: ' + cid.toV1().toBaseEncodedString('base58btc') + '\n' +
+          '\n' +
+          'CID1 (for ethereum as hex16 - first char defines code which is always "f" for hex\n' +
+          'CID1 (hex): ' + cid.toV1().toBaseEncodedString('base16')
+        );
+      } catch (err) {
+        document.getElementById('convertResult').value = 'Error';
+      }
+    };
+  }
+);
+
+    </script>
+</body>
+</html>

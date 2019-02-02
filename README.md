@@ -7,10 +7,12 @@ IPFS-Signer
 **Sign ipfs cid hashes and content version (in an ethereum compatile way)**:
 
 This tool is an easy way to sign a distrubution of files (e.g. a web page or a distributed app). It's intended to
-be used with base58 encoded hashes like ipfs cids.
+be used with ipfs cids, so that you can directly access the signed content on any IPFS gateway.
 
-Additionally there is a solidity registry contract which works directly with the signatures created by ipfs-signer.
-The contract can be updated by anybody with valid signatures and returns only the most recent ipfs cid (based on the
+Check out our [online example](https://berlincode.github.io/ipfs-signer/test.html).
+
+Additionally there is a solidity resolver contract which works directly with the signatures created by ipfs-signer.
+The contract can be updated by anybody with a valid signature and returns only the most recent ipfs cid (based on the
 signed version number).
 
 Example usage:

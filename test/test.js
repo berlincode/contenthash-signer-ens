@@ -44,7 +44,7 @@ function setup(done){
   const provider = ganache.provider(options);
   web3.setProvider(provider);
 
-  accountSign = web3.eth.accounts.privateKeyToAccount('dc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35');
+  accountSign = web3.eth.accounts.privateKeyToAccount('0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35');
 
   web3.eth.getAccounts()
     .then(function(accounts){
@@ -58,7 +58,8 @@ describe('Test contract and signature', function() {
   this.timeout(10*1000);
 
   // IPFS content identifier (base56 encoded)
-  const cid = 'QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya';
+  //const cid0String = 'QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya';
+  const cid1String = 'zdj7WmYPgTE1BKJkysxAfUzgC4f4RGaQDLzZyRzPFfqwFSQ9W';
 
   // only simple version strings like '0.1.2' or '0.1.2.3' are valid
   const versionString = 'v1.2.3';
@@ -101,9 +102,9 @@ describe('Test contract and signature', function() {
       assert.ok(version.isZero());
     });
 
-    it('Calculate signature data', function() {
+    it('Create signature data (calculate and sign)', function() {
       const versionHex = ipfsSigner.versionStringToHex(versionString);
-      signatureData = ipfsSigner.signatureDataCreate(web3, accountSign, cid, versionHex);
+      signatureData = ipfsSigner.signatureDataCreate(web3, accountSign, cid1String, versionHex);
     });
 
     it('Validate signature data', function() {
@@ -111,9 +112,9 @@ describe('Test contract and signature', function() {
       assert.ok(success);
     });
 
-    it('Update constract', function() {
+    it('Update contract', function() {
       return contractInstance.methods.update(
-        ipfsSigner.hexFromBase58(signatureData.cid),
+        '0x' + ipfsSigner.cidStringToCid1HexRaw(signatureData.cid),
         signatureData.version,
         signatureData.address,
         signatureData.sig
@@ -138,7 +139,9 @@ describe('Test contract and signature', function() {
       assert.ok(! cidBn.isZero());
       assert.ok(! version.isZero());
 
-      assert.equal(ipfsSigner.bnToBase58(cidBn), cid);
+      var cid1HexRaw = result.cid.replace(/^0x/, '');
+
+      assert.equal(ipfsSigner.cid1HexRawToCid1Base58String(cid1HexRaw), cid1String);
     });
 
   });
