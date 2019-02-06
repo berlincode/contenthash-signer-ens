@@ -1,8 +1,8 @@
 {
-  "name": "ipfs-signer",
-  "version": "3.0.0",
-  "description": "Sign ipfs cid hashes and content version (in an ethereum compatible way)",
-  "homepage": "https://github.com/berlincode/ipfs-signer",
+  "name": "contenthash-signer-ens",
+  "version": "3.0.1",
+  "description": "Sign EIP-1577 compatible contenthashes (e.g. IPFS CIDs) hashes and content version (in an ethereum compatible way)",
+  "homepage": "https://github.com/berlincode/contenthash-signer-ens",
   "license": "MIT",
   "main": "js/index.js",
   "author": {
@@ -28,7 +28,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/berlincode/ipfs-signer.git"
+    "url": "git+https://github.com/berlincode/contenthash-signer-ens.git"
   },
   "keywords": [
     "ens",

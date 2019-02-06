@@ -1,18 +1,18 @@
 /*
- Ipfs Signer Registry
+ ENS Contanthash resolver (EIP-1577) wich may be updated with signatures from contenthash-signer-ens
 
 
  Copyright (c) Ulf Bartel
 
  Public repository:
- https://github.com/berlincode/ipfs-signer
+ https://github.com/berlincode/contenthash-signer-ens
 
  License: MIT
 
  Contact:
  elastic.code@gmail.com
 
- Version 0.5.0
+ Version 0.5.1
 
  This contract acts as a ens resolver.
  Implements contenthash field for ENS (EIP 1577) (https://eips.ethereum.org/EIPS/eip-1577).

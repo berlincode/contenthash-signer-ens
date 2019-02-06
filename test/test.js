@@ -1,7 +1,7 @@
 // vim: sts=2:ts=2:sw=2
 /* eslint-env mocha */
 
-const ipfsSigner = require('../js/index.js');
+const contenthashSignerEns = require('../js/index.js');
 const Web3 = require('web3');
 const assert = require('assert');
 const ganache = require('ganache-core');
@@ -108,7 +108,6 @@ describe('Test contract and signature', function() {
       );
       assert.notEqual(contractInstanceRegistry.options.address, undefined);
 
-      
       // now deploy our resolver contract
       const contract = new web3.eth.Contract(contractInterface);
       contractInstanceResolver = await contract.deploy(
@@ -153,19 +152,19 @@ describe('Test contract and signature', function() {
     });
 
     it('Create signature data (calculate and sign)', function() {
-      const versionHex = ipfsSigner.versionStringToHex(versionString);
-      const contenthashHex = ipfsSigner.cidStringToContenthashHex(cid1String);
-      signatureData = ipfsSigner.signatureDataCreate(web3, accountSign, contenthashHex, versionHex);
+      const versionHex = contenthashSignerEns.versionStringToHex(versionString);
+      const contenthashHex = contenthashSignerEns.cidStringToContenthashHex(cid1String);
+      signatureData = contenthashSignerEns.signatureDataCreate(web3, accountSign, contenthashHex, versionHex);
     });
 
     it('Validate signature data', function() {
-      var success = ipfsSigner.signatureDataValidate(web3, signatureData);
+      var success = contenthashSignerEns.signatureDataValidate(web3, signatureData);
       assert.ok(success);
     });
 
     it('Set contenthash by signature in contract', function() {
       return contractInstanceResolver.methods.setContenthashBySignature(
-        nodeBySignature, 
+        nodeBySignature,
         signatureData.contenthash,
         signatureData.version,
         signatureData.sig
@@ -190,7 +189,7 @@ describe('Test contract and signature', function() {
       assert.ok(! contenthashBn.isZero());
       //assert.ok(! version.isZero());
 
-      assert.equal(ipfsSigner.contenthashHexToCid(result), cid1String);
+      assert.equal(contenthashSignerEns.contenthashHexToCid(result), cid1String);
     });
 
   });

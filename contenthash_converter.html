@@ -38,7 +38,7 @@ input[type='text']{
     Contenthash (multicodec):
     <form>
         <div>
-            <input id="convert1InputContenthash" value="0xe301701220ef64d0e6f7a121ce13f398c14c143aaf7fa861a216e433c4ad185c7286c6adb1" placeholder="0xe301701220ef64d0e6f7a121ce13f398c14c143aaf7fa861a216e433c4ad185c7286c6adb1" type="text">
+            <input id="convert1InputContenthash" value="0xe30101701220ef64d0e6f7a121ce13f398c14c143aaf7fa861a216e433c4ad185c7286c6adb1" placeholder="0xe301701220ef64d0e6f7a121ce13f398c14c143aaf7fa861a216e433c4ad185c7286c6adb1" type="text">
         </div>
         <button id="convert1Btn">Convert</button>
     </form>
@@ -51,18 +51,18 @@ require.config({
   paths: {
     'web3': 'assets/js/web3',
     'ethereumjs-util': 'assets/js/ethereumjs-util',
-    'ipfsSigner': 'js/index',
+    'contenthash-signer-ens': 'js/index',
     'cids': 'node_modules/cids/dist/index'
   }
 });
 
 require(
   [
-    'ipfsSigner',
+    'contenthash-signer-ens',
     'web3',
     'cids'
   ],
-  function(ipfsSigner, Web3, Cids){
+  function(contenthashSignerEns, Web3, Cids){
 
     // cids seems not to have a valid AMD loader so we use Cids from window namespace 
     Cids = window.Cids;
@@ -77,7 +77,7 @@ require(
         'CID1 (hex): ' + cid.toV1().toBaseEncodedString('base16') + '\n' +
         '\n' +
         'Contenthash as multicodec <protoCode uvarint><value []byte> where 0xe3 means IPFS\n' +
-        'contenthash (binary): ' + ipfsSigner.cidStringToContenthashHex(cid)
+        'contenthash (binary): ' + contenthashSignerEns.cidStringToContenthashHex(cid)
       );
     };
 
@@ -103,7 +103,7 @@ require(
       document.getElementById('convert1Result').value = '';
 
       try {
-        var cidString = ipfsSigner.contenthashHexToCid(document.getElementById('convert1InputContenthash').value);
+        var cidString = contenthashSignerEns.contenthashHexToCid(document.getElementById('convert1InputContenthash').value);
         var cid = new Cids(cidString);
 
         document.getElementById('convert1Result').value = cidToInfoString(cid);

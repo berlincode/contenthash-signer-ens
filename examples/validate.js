@@ -3,7 +3,7 @@
 /* eslint-env es6 */
 /*eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
 
-const ipfsSigner = require('../js/index.js');
+const contenthashSignerEns = require('../js/index.js');
 const Web3 = require('web3');
 const minimist = require('minimist');
 const fs = require('fs');
@@ -25,7 +25,7 @@ const quiet = argv.quiet;
 
 const web3 = new Web3();
 const signatureData = JSON.parse(fs.readFileSync(filename, 'utf8'));
-const success = ipfsSigner.signatureDataValidate(web3, signatureData);
+const success = contenthashSignerEns.signatureDataValidate(web3, signatureData);
 
 if (! quiet){
   console.log(success? 'SUCCESS' : 'FAILURE');

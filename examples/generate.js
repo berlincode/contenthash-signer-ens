@@ -3,7 +3,7 @@
 /* eslint-env es6 */
 /*eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
 
-const ipfsSigner = require('../js/index.js');
+const contenthashSignerEns = require('../js/index.js');
 const Web3 = require('web3');
 const minimist = require('minimist');
 const readline = require('readline');
@@ -51,9 +51,9 @@ rl.question(quiet? '' : 'Enter private key (hex): ', async function(privKey) {
 
   var account = web3.eth.accounts.privateKeyToAccount(privKey);
 
-  const versionHex = ipfsSigner.versionStringToHex(versionString);
-  const contenthashHex = ipfsSigner.cidStringToContenthashHex(ipfsCid);
-  const signatureData = ipfsSigner.signatureDataCreate(web3, account, contenthashHex, versionHex);
+  const versionHex = contenthashSignerEns.versionStringToHex(versionString);
+  const contenthashHex = contenthashSignerEns.cidStringToContenthashHex(ipfsCid);
+  const signatureData = contenthashSignerEns.signatureDataCreate(web3, account, contenthashHex, versionHex);
 
   console.log(JSON.stringify(signatureData, null, 2));
 

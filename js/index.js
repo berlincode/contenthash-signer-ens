@@ -7,7 +7,7 @@
       'cids',
       'ethereumjs-util'
     ], function(Web3, Cids, ethUtil){
-      // cids seems not to have a valid AMD loader so we use Cids from window namespace 
+      // cids seems not to have a valid AMD loader so we use Cids from window namespace
       Cids = window.Cids;
       return factory(
         Web3,
@@ -122,7 +122,7 @@
     return web3.eth.personal.ecRecover(hash, signature);
     */
     var msg = ethUtil.toBuffer(
-      '0x' + 
+      '0x' +
       '19457468657265756d205369676e6564204d6573736167653a0a'+ // '\x19Ethereum Signed Message:\n'
       '3332' + // length = "32"
       hash.replace(/^0x/, '')
@@ -143,7 +143,6 @@
     return addr.replace(/^0x/, '').toLowerCase() === signatureData.address.replace(/^0x/, '').toLowerCase();
   }
 
-  
   function toCid1(cid){
     return (new Cids(cid)).toV1().toBaseEncodedString('base58btc');
   }

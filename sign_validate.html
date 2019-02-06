@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
-    <title>Ipfs-Signer Example</title>
+    <title>Contenthash-Signer-ENS Example</title>
 
     <script type="text/javascript" src="assets/js/require.js"></script>
 
@@ -14,9 +14,9 @@ input[type='text']{
     </style>
 </head>
 <body>
-    <h1>Ipfs-Signer Example</h1>
+    <h1>Contenthash-Signer-ENS Example</h1>
     <p>
-        This is the online example of <a href="https://github.com/berlincode/ipfs-signer">https://github.com/berlincode/ipfs-signer</a>
+        This is the online example of <a href="https://github.com/berlincode/contenthash-signer-ens">https://github.com/berlincode/contenthash-signer-ens</a>
     </p>
 
     <p>
@@ -47,13 +47,13 @@ input[type='text']{
     <form>
         <div>
             <textarea id="validateSignature" rows="10" cols="100">{
-  "contenthash": "0xe301701220ef64d0e6f7a121ce13f398c14c143aaf7fa861a216e433c4ad185c7286c6adb1",
+  "contenthash": "0xe30101701220ef64d0e6f7a121ce13f398c14c143aaf7fa861a216e433c4ad185c7286c6adb1",
   "version": "0x0000000000000000000000000000000000000000000000000001000200030000",
   "address": "0x384485D74cFBd5289B852824E6D1D8C4b77acab4",
   "sig": {
-    "v": "0x1b",
-    "r": "0x2d232751428def81f83bdda6d5a68cbac6d1e44024cd2e0f5aae14c9104235f2",
-    "s": "0x5ad44c5de55b90665e4867d86ce1aabbf89c14678819ae327e5c4756e0438b99"
+    "v": "0x1c",
+    "r": "0x92117d4045e9e53a6bd01f141eccfdc52a0ac30e4ec96f0a4315e909a148e909",
+    "s": "0x11c1f37fb3b6734355fc5a8415c129fc29cf750e98bae67255de7d16e9a76318"
   }
 }</textarea>
         </div>
@@ -68,17 +68,17 @@ require.config({
   paths: {
     'web3': 'assets/js/web3',
     'ethereumjs-util': 'assets/js/ethereumjs-util',
-    'ipfsSigner': 'js/index',
+    'contenthash-signer-ens': 'js/index',
     'cids': 'node_modules/cids/dist/index'
   }
 });
 
 require(
   [
-    'ipfsSigner',
+    'contenthash-signer-ens',
     'web3'
   ],
-  function(ipfsSigner, Web3){
+  function(contenthashSignerEns, Web3){
 
     document.getElementById('signBtn').onclick = function(evt){
       evt.preventDefault();
@@ -92,12 +92,12 @@ require(
         var cid = document.getElementById('signCid').value;
         var versionString = document.getElementById('signVersion').value;
 
-        var contenthashHex = ipfsSigner.cidStringToContenthashHex(cid);
-        var signatureData = ipfsSigner.signatureDataCreate(
+        var contenthashHex = contenthashSignerEns.cidStringToContenthashHex(cid);
+        var signatureData = contenthashSignerEns.signatureDataCreate(
           web3,
           accountSign,
           contenthashHex,
-          ipfsSigner.versionStringToHex(versionString)
+          contenthashSignerEns.versionStringToHex(versionString)
         );
 
         document.getElementById('signResult').value = JSON.stringify(signatureData, null, 2);
@@ -116,7 +116,7 @@ require(
       try {
         var web3 = new Web3();
 
-        var success = ipfsSigner.signatureDataValidate(web3, JSON.parse(document.getElementById('validateSignature').value));
+        var success = contenthashSignerEns.signatureDataValidate(web3, JSON.parse(document.getElementById('validateSignature').value));
         document.getElementById('validateResult').value = (success? 'Validation success': 'Validation error');
       
       } catch (err){
