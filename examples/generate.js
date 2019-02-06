@@ -14,7 +14,7 @@ var argv = minimist(process.argv.slice(2), {boolean: ['quiet']});
 if (argv._.length !== 2){
   console.log('usage:');
   console.log('    generate.js <ipfs-cid0-or-cid1> <version-string>');
-  console.log('    --quiet : quiet');
+  console.log('    --quiet     : quiet');
   console.log('');
   console.log('The private key needs to be supplied via stdin.');
   console.log('');
@@ -25,7 +25,7 @@ if (argv._.length !== 2){
   process.exit(1);
 }
 
-const ipfsCid = argv._[0];
+var ipfsCid = argv._[0];
 const versionString = argv._[1];
 const quiet = argv.quiet;
 
@@ -52,9 +52,10 @@ rl.question(quiet? '' : 'Enter private key (hex): ', async function(privKey) {
   var account = web3.eth.accounts.privateKeyToAccount(privKey);
 
   const versionHex = ipfsSigner.versionStringToHex(versionString);
-  const signatureData = ipfsSigner.signatureDataCreate(web3, account, ipfsCid, versionHex);
+  const contenthashHex = ipfsSigner.cidStringToContenthashHex(ipfsCid);
+  const signatureData = ipfsSigner.signatureDataCreate(web3, account, contenthashHex, versionHex);
 
-  console.log(JSON.stringify(signatureData));
+  console.log(JSON.stringify(signatureData, null, 2));
 
   rl.close();
 });

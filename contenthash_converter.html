@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html class="" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <title>Contenthash converter</title>
+
+    <script type="text/javascript" src="assets/js/require.js"></script>
+
+    <style>
+input[type='text']{ 
+    width: 775px;
+}
+    </style>
+</head>
+<body>
+    <h1>Contenthash converter</h1>
+    <p>
+        This tool converts between IPFS CIDs and multicodec contenthashes as used in ens resolvers. It should be conform to <a href="https://eips.ethereum.org/EIPS/eip-1577">ethereum EIP 1577</a>.
+    </p>
+
+    <h2>Convert IPFS CID to CID0 and CID1 and contenthash</h2>
+    IPFS CID/hash as CID0 or CID1
+    <form>
+        <div>
+            <input id="convert0InputCid" value="QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya" placeholder="QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya" type="text">
+        </div>
+        <div>
+            hint: CID is always converted to CID1 before creating the contenthash
+        </div>
+        <button id="convert0Btn">Convert</button>
+    </form>
+    Result:<br/>
+    <textarea id="convert0Result" rows="9" cols="100"></textarea>
+    <hr/>
+
+    <h2>Convert contenthash to CID</h2>
+    Contenthash (multicodec):
+    <form>
+        <div>
+            <input id="convert1InputContenthash" value="0xe301701220ef64d0e6f7a121ce13f398c14c143aaf7fa861a216e433c4ad185c7286c6adb1" placeholder="0xe301701220ef64d0e6f7a121ce13f398c14c143aaf7fa861a216e433c4ad185c7286c6adb1" type="text">
+        </div>
+        <button id="convert1Btn">Convert</button>
+    </form>
+    Result:<br/>
+    <textarea id="convert1Result" rows="9" cols="100"></textarea>
+
+    <script>
+
+require.config({
+  paths: {
+    'web3': 'assets/js/web3',
+    'ethereumjs-util': 'assets/js/ethereumjs-util',
+    'ipfsSigner': 'js/index',
+    'cids': 'node_modules/cids/dist/index'
+  }
+});
+
+require(
+  [
+    'ipfsSigner',
+    'web3',
+    'cids'
+  ],
+  function(ipfsSigner, Web3, Cids){
+
+    // cids seems not to have a valid AMD loader so we use Cids from window namespace 
+    Cids = window.Cids;
+
+    var cidToInfoString = function(cid){
+      return (
+        'CID (default encoding base58btc)\n' +
+        'CID0: ' + cid.toV0().toBaseEncodedString('base58btc') + '\n' +
+        'CID1: ' + cid.toV1().toBaseEncodedString('base58btc') + '\n' +
+        '\n' +
+        'CID1 as hex: first char defines code which is always "f" for hex\n' +
+        'CID1 (hex): ' + cid.toV1().toBaseEncodedString('base16') + '\n' +
+        '\n' +
+        'Contenthash as multicodec <protoCode uvarint><value []byte> where 0xe3 means IPFS\n' +
+        'contenthash (binary): ' + ipfsSigner.cidStringToContenthashHex(cid)
+      );
+    };
+
+    document.getElementById('convert0Btn').onclick = function(evt){
+      evt.preventDefault();
+
+      // clear
+      document.getElementById('convert0Result').value = '';
+
+      try {
+        var cid = new Cids(document.getElementById('convert0InputCid').value);
+
+        document.getElementById('convert0Result').value = cidToInfoString(cid);
+      } catch (err) {
+        document.getElementById('convert0Result').value = 'Error';
+      }
+    };
+
+    document.getElementById('convert1Btn').onclick = function(evt){
+      evt.preventDefault();
+
+      // clear
+      document.getElementById('convert1Result').value = '';
+
+      try {
+        var cidString = ipfsSigner.contenthashHexToCid(document.getElementById('convert1InputContenthash').value);
+        var cid = new Cids(cidString);
+
+        document.getElementById('convert1Result').value = cidToInfoString(cid);
+      } catch (err) {
+        document.getElementById('convert1Result').value = 'Error';
+      }
+    };
+  }
+);
+
+    </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 {
   "name": "ipfs-signer",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Sign ipfs cid hashes and content version (in an ethereum compatible way)",
   "homepage": "https://github.com/berlincode/ipfs-signer",
   "license": "MIT",
@@ -11,6 +11,7 @@
   },
   "scripts": {
     "compile": "solcjs --optimize --bin --abi IpfsSigner.sol",
+    "compile-test-contract": "cd test/contracts && solcjs --optimize --bin --abi ENSRegistry.sol",
     "ethlint": "solium --file IpfsSigner.sol",
     "test": "mocha",
     "eslint": "eslint ./js/*.js ./test/*.js ./examples/*.js ./*.html",
@@ -30,6 +31,8 @@
     "url": "git+https://github.com/berlincode/ipfs-signer.git"
   },
   "keywords": [
+    "ens",
+    "resolver",
     "sign",
     "signature",
     "smart contract",
@@ -41,6 +44,7 @@
     "web3": "1.0.0-beta.37"
   },
   "devDependencies": {
+    "eth-ens-namehash": "^2.0.8",
     "eslint": "5.10.0",
     "eslint-plugin-html": "^5.0.0",
     "eslint-plugin-ie11": "^1.0.0",

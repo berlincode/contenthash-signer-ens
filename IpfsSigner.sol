@@ -12,14 +12,52 @@
  Contact:
  elastic.code@gmail.com
 
- Version 0.3.0
+ Version 0.5.0
+
+ This contract acts as a ens resolver.
+ Implements contenthash field for ENS (EIP 1577) (https://eips.ethereum.org/EIPS/eip-1577).
 */
 
 pragma solidity 0.5.3;
 pragma experimental ABIEncoderV2;
 
+interface ENS {
 
-contract IpfsCidRegistry {
+    // Logged when the owner of a node assigns a new owner to a subnode.
+    event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
+
+    // Logged when the owner of a node transfers ownership to a new account.
+    event Transfer(bytes32 indexed node, address owner);
+
+    // Logged when the resolver for a node changes.
+    event NewResolver(bytes32 indexed node, address resolver);
+
+    // Logged when the TTL of a node changes
+    event NewTTL(bytes32 indexed node, uint64 ttl);
+
+
+    function setSubnodeOwner(bytes32 node, bytes32 label, address owner) external;
+    function setResolver(bytes32 node, address resolver) external;
+    function setOwner(bytes32 node, address owner) external;
+    function setTTL(bytes32 node, uint64 ttl) external;
+    function owner(bytes32 node) external view returns (address);
+    function resolver(bytes32 node) external view returns (address);
+    function ttl(bytes32 node) external view returns (uint64);
+}
+
+
+contract IpfsCidRegistry { // TODO rename to ...Relsover
+
+    /* public variables / constants */
+    uint64 public version = (
+        (0 << 32) + /* major */
+        (5 << 16) + /* minor */
+        0 /* bugfix */
+    );
+
+    bytes4 constant CONTENTHASH_INTERFACE_ID = 0xbc1c58d1;
+
+    event ContenthashChanged(bytes32 indexed node, bytes hash);
 
     struct Signature {
         uint8 v;
@@ -27,52 +65,92 @@ contract IpfsCidRegistry {
         bytes32 s;
     }
 
-    // remembed last cid and version for each addr
-    mapping(address => bytes) internal addrToCid;
-    mapping(address => uint256) internal addrToVersion;
-
-    /* This is the constructor */
-    constructor (
-    ) public
-    {
+    struct Record {
+        uint64 version;
+        bytes contenthash;
     }
 
-    function update (
-        bytes memory cid,
-        uint256 version,
-        address addr,
+    ENS ens;
+
+    mapping (bytes32 => Record) records;
+
+    modifier onlyOwner(bytes32 node) {
+        require(ens.owner(node) == msg.sender);
+        _;
+    }
+
+    /**
+     * Constructor.
+     * @param ensAddr The ENS registrar contract.
+     */
+    constructor(ENS ensAddr) public {
+        ens = ensAddr;
+    }
+
+    /**
+     * Sets the contenthash associated with an ENS node.
+     * May only be called by the owner of that node in the ENS registry.
+     * @param node The node to update.
+     * @param hash The contenthash to set
+     */
+    function setContenthash(bytes32 node, bytes calldata hash) external onlyOwner(node) {
+        records[node].contenthash = hash;
+        // set version to 0xffffffffffffffff if contenthash is set directly by owner
+        records[node].version = 0xffffffffffffffff;
+        emit ContenthashChanged(node, hash);
+    }
+
+    /**
+     * Returns the contenthash associated with an ENS node.
+     * @param node The ENS node to query.
+     * @return The associated contenthash.
+     */
+    function contenthash(bytes32 node) external view returns (bytes memory) {
+        return records[node].contenthash;
+    }
+
+    /**
+     * Returns true if the resolver implements the interface specified by the provided hash.
+     * @param interfaceID The ID of the interface to check for.
+     * @return True if the contract implements the requested interface.
+     */
+    function supportsInterface(bytes4 interfaceID) external pure returns (bool) {
+        return interfaceID == CONTENTHASH_INTERFACE_ID;
+    }
+
+    /**
+     * Sets the contenthash associated with an ENS node using a prebuild signature.
+     * May be called by anyone with a valid signature.
+     * @param node The node to update.
+     * @param hash The contenthash to set
+     * @param version The version (which is part of the signature)
+     * @param signature The signature over the keccak256(hash, version)
+     */
+    function setContenthashBySignature (
+        bytes32 node,
+        bytes memory hash,
+        uint64 version,
         Signature memory signature
     ) public
     {
-        if (
-            verify(
+        require(
+            ens.owner(node) == verify(
                 keccak256(
                     abi.encodePacked(
-                        cid,
+                        hash,
                         version
                     )
                 ),
                 signature
-            ) != addr
-        ){
-            return;
-        }
+            )
+        );
 
         // update only if new version is higher than current version
-        if (version > addrToVersion[addr]) {
-            addrToCid[addr] = cid;
-            addrToVersion[addr] = version;
+        if (version > records[node].version) {
+            records[node].contenthash = hash;
+            records[node].version = version;
+            emit ContenthashChanged(node, hash);
         }
-    }
-
-    function get (
-        address addr
-    )
-        public
-        view
-        returns (bytes memory cid, uint256 version)
-    {
-        return (addrToCid[addr], addrToVersion[addr]);
     }
 
     /* internal functions */
@@ -97,4 +175,5 @@ contract IpfsCidRegistry {
         );
         return signer;
     }
+
 }

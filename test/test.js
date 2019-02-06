@@ -6,6 +6,8 @@ const Web3 = require('web3');
 const assert = require('assert');
 const ganache = require('ganache-core');
 const fs = require('fs');
+const namehash = require('eth-ens-namehash');
+const sha3 = require('web3-utils').sha3;
 
 var logger = {
   log: function(/*message*/) {
@@ -13,19 +15,34 @@ var logger = {
   }
 };
 
-var contract_interface = JSON.parse(
+const contractInterface = JSON.parse(
   fs.readFileSync(
     'IpfsSigner_sol_IpfsCidRegistry.abi',
     {encoding: 'utf8'}
   )
 );
-var contract_bytecode = fs.readFileSync(
+const contractBytecode = fs.readFileSync(
   'IpfsSigner_sol_IpfsCidRegistry.bin',
   {encoding: 'utf8'}
 );
 
+const contractInterfaceRegistry = JSON.parse(
+  fs.readFileSync(
+    'test/contracts/ENSRegistry_sol_ENSRegistry.abi',
+    {encoding: 'utf8'}
+  )
+);
+const contractBytecodeRegistry = fs.readFileSync(
+  'test/contracts/ENSRegistry_sol_ENSRegistry.bin',
+  {encoding: 'utf8'}
+);
+
+const nodeDefault = namehash.hash('eth');
+const nodeBySignature = namehash.hash('ethsig');
+
 var web3;
 var accountSign, accountDefault;
+
 
 function setup(done){
   const options = {
@@ -65,7 +82,7 @@ describe('Test contract and signature', function() {
   const versionString = 'v1.2.3';
 
   var signatureData;
-  var contractInstance;
+  var contractInstanceResolver;
 
   before('Setup', function(done) {
     setup(done);
@@ -74,11 +91,11 @@ describe('Test contract and signature', function() {
   describe('contract', function() {
 
     it('Contract create', async function() {
-      const contract = new web3.eth.Contract(contract_interface);
-
-      contractInstance = await contract.deploy(
+      // first deploy the default ens registry contract
+      const contractRegistry = new web3.eth.Contract(contractInterfaceRegistry);
+      const contractInstanceRegistry = await contractRegistry.deploy(
         {
-          data: contract_bytecode,
+          data: contractBytecodeRegistry,
           arguments: [
           ]
         }
@@ -86,25 +103,59 @@ describe('Test contract and signature', function() {
         {
           gas: 4000000,
           gasPrice: '30000000000000',
-          //value: 0,
           from: accountDefault
         }
       );
-      assert.notEqual(contractInstance.options.address, undefined);
+      assert.notEqual(contractInstanceRegistry.options.address, undefined);
+
+      
+      // now deploy our resolver contract
+      const contract = new web3.eth.Contract(contractInterface);
+      contractInstanceResolver = await contract.deploy(
+        {
+          data: contractBytecode,
+          arguments: [
+            contractInstanceRegistry.options.address
+          ]
+        }
+      )
+        .send(
+          {
+            gas: 4000000,
+            gasPrice: '30000000000000',
+            from: accountDefault
+          }
+        );
+      assert.notEqual(contractInstanceResolver.options.address, undefined);
+
+      await contractInstanceRegistry.methods.setSubnodeOwner('0x0', sha3('eth'), accountDefault)
+        .send({
+          gas: 4000000,
+          gasPrice: '30000000000000',
+          from: accountDefault
+        });
+
+      await contractInstanceRegistry.methods.setSubnodeOwner('0x0', sha3('ethsig'), accountSign.address)
+        .send({
+          gas: 4000000,
+          gasPrice: '30000000000000',
+          from: accountDefault
+        });
     });
 
-    it('Check that no cid is returned from contract', async function() {
-      const result = await contractInstance.methods.get(accountSign.address).call();
+    it('Check that no contenthash is returned from contract', async function() {
+      const result = await contractInstanceResolver.methods.contenthash(nodeBySignature).call();
 
-      assert.equal(result.cid, null);
+      assert.equal(result, null);
 
-      const version = Web3.utils.toBN(result.version);
-      assert.ok(version.isZero());
+      //const version = Web3.utils.toBN(result.version);
+      //assert.ok(version.isZero());
     });
 
     it('Create signature data (calculate and sign)', function() {
       const versionHex = ipfsSigner.versionStringToHex(versionString);
-      signatureData = ipfsSigner.signatureDataCreate(web3, accountSign, cid1String, versionHex);
+      const contenthashHex = ipfsSigner.cidStringToContenthashHex(cid1String);
+      signatureData = ipfsSigner.signatureDataCreate(web3, accountSign, contenthashHex, versionHex);
     });
 
     it('Validate signature data', function() {
@@ -112,11 +163,11 @@ describe('Test contract and signature', function() {
       assert.ok(success);
     });
 
-    it('Update contract', function() {
-      return contractInstance.methods.update(
-        '0x' + ipfsSigner.cidStringToCid1HexRaw(signatureData.cid),
+    it('Set contenthash by signature in contract', function() {
+      return contractInstanceResolver.methods.setContenthashBySignature(
+        nodeBySignature, 
+        signatureData.contenthash,
         signatureData.version,
-        signatureData.address,
         signatureData.sig
       ).send(
         {
@@ -128,21 +179,102 @@ describe('Test contract and signature', function() {
       );
     });
 
-    it('Get cid from contract', async function() {
-      const result = await contractInstance.methods.get(accountSign.address).call();
+    it('Get contenthash from contract', async function() {
+      const result = await contractInstanceResolver.methods.contenthash(nodeBySignature).call();
 
-      assert.notEqual(result.cid, null);
+      assert.notEqual(result, null);
 
-      const cidBn = Web3.utils.toBN(result.cid);
-      const version = Web3.utils.toBN(result.version);
+      const contenthashBn = Web3.utils.toBN(result);
+      //const version = Web3.utils.toBN(result.version);
 
-      assert.ok(! cidBn.isZero());
-      assert.ok(! version.isZero());
+      assert.ok(! contenthashBn.isZero());
+      //assert.ok(! version.isZero());
 
-      var cid1HexRaw = result.cid.replace(/^0x/, '');
-
-      assert.equal(ipfsSigner.cid1HexRawToCid1Base58String(cid1HexRaw), cid1String);
+      assert.equal(ipfsSigner.contenthashHexToCid(result), cid1String);
     });
 
+  });
+
+  describe('supportsInterface function', async () => {
+
+    it('supports known interfaces', async () => {
+      assert.equal(await contractInstanceResolver.methods.supportsInterface('0xbc1c58d1').call(), true);
+    });
+
+    it('does not support a random interface', async () => {
+      assert.equal(await contractInstanceResolver.methods.supportsInterface('0x3b3b57df').call(), false);
+    });
+  });
+
+
+  describe('contenthash', async () => {
+
+    it('permits setting contenthash by owner', async () => {
+      await contractInstanceResolver.methods.setContenthash(nodeDefault, '0x0000000000000000000000000000000000000000000000000000000000000001')
+        .send({
+          gas: 4000000,
+          gasPrice: '30000000000000',
+          from: accountDefault
+        });
+      assert.equal(await contractInstanceResolver.methods.contenthash(nodeDefault).call(), '0x0000000000000000000000000000000000000000000000000000000000000001');
+    });
+
+    it('can overwrite previously set contenthash', async () => {
+      await contractInstanceResolver.methods.setContenthash(nodeDefault, '0x0000000000000000000000000000000000000000000000000000000000000001')
+        .send({
+          gas: 4000000,
+          gasPrice: '30000000000000',
+          from: accountDefault
+        });
+      assert.equal(await contractInstanceResolver.methods.contenthash(nodeDefault).call(), '0x0000000000000000000000000000000000000000000000000000000000000001');
+
+      await contractInstanceResolver.methods.setContenthash(nodeDefault, '0x0000000000000000000000000000000000000000000000000000000000000002')
+        .send({
+          gas: 4000000,
+          gasPrice: '30000000000000',
+          from: accountDefault
+        });
+
+      assert.equal(await contractInstanceResolver.methods.contenthash(nodeDefault).call(), '0x0000000000000000000000000000000000000000000000000000000000000002');
+    });
+
+    /*
+    it('can overwrite to same contenthash', async () => {
+      await contractInstanceResolver.setContenthash(nodeDefault, '0x0000000000000000000000000000000000000000000000000000000000000001', {from: accounts[0]});
+      assert.equal(await contractInstanceResolver.contenthash(nodeDefault), '0x0000000000000000000000000000000000000000000000000000000000000001');
+
+      await contractInstanceResolver.setContenthash(nodeDefault, '0x0000000000000000000000000000000000000000000000000000000000000002', {from: accounts[0]});
+      assert.equal(await contractInstanceResolver.contenthash(nodeDefault), '0x0000000000000000000000000000000000000000000000000000000000000002');
+    });
+
+    it('forbids setting contenthash by non-owners', async () => {
+      try {
+          await contractInstanceResolver.setContenthash(nodeDefault, '0x0000000000000000000000000000000000000000000000000000000000000001', {from: accounts[1]});
+      } catch (error) {
+          return utils.ensureException(error);
+      }
+
+      assert.fail('setting did not fail');
+    });
+
+    it('forbids writing same contenthash by non-owners', async () => {
+      await contractInstanceResolver.setContenthash(nodeDefault, '0x0000000000000000000000000000000000000000000000000000000000000001', {from: accounts[0]});
+
+      try {
+          await contractInstanceResolver.setContenthash(nodeDefault, '0x0000000000000000000000000000000000000000000000000000000000000001', {from: accounts[1]});
+      } catch (error) {
+          return utils.ensureException(error);
+      }
+
+      assert.fail('setting did not fail');
+    });
+    */
+
+    it('returns empty when fetching nonexistent contenthash', async () => {
+      assert.equal(
+        await contractInstanceResolver.methods.contenthash(namehash.hash('unknown')).call(),
+        null
+      );
+    });
   });
 });

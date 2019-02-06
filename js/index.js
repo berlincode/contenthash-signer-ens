@@ -32,6 +32,7 @@
   }
 }(this, function (Web3, Cids, ethUtil) {
   var web3_utils = Web3.utils;
+  var storageSystemHexIPFS = 'e301'; // as hex string // TODO 01?
 
   function versionStringToBn(versionString){
     // accepts only simple version strings like 'v0.1.2' or '0.1.2.3'
@@ -39,6 +40,9 @@
     // ignore a leading 'v'
     if (versionString[0] === 'v')
       versionString = versionString.substring(1);
+
+    if (! /^[0-9.]*$/.test(versionString))
+      throw 'invalid char in version';
 
     var fragments = versionString.split('.');
     if (fragments.length > 4)
@@ -51,9 +55,11 @@
     var versionBn = web3_utils.toBN(0);
     var i;
     for (i=0 ; i < fragments.length ; i++){
-      // TODO validate >=0 and <= 0xffff
+      var fragmentInt = Number(fragments[i]);
+      if (fragmentInt > 0xffff)
+        throw 'version fragment > 0xffff';
       versionBn = versionBn.mul(web3_utils.toBN('0x10000'));
-      versionBn = versionBn.add(web3_utils.toBN(Number(fragments[i])));
+      versionBn = versionBn.add(web3_utils.toBN(fragmentInt));
     }
     return versionBn;
   }
@@ -62,35 +68,32 @@
     return web3_utils.padLeft('0x' + versionStringToBn(versionString).toString(16), 64);
   }
 
-  function cid1HexRawToCid1Base58String(hexString){
-    // we are adding a code 'f' for hex to the raw string
-    var cid = new Cids('f' + hexString);
-    return cid.toV1().toBaseEncodedString('base58btc');
-  }
-
   function cidStringToCid1HexRaw(cidAsString){
-    // cid hex representation always starts with code (leading char) 'f' which is stripped here
     var cid = new Cids(cidAsString);
     var cid1Hex = cid.toV1().toBaseEncodedString('base16');
     return cid1Hex.substring(1);
   }
 
-  function updateHash(cidHex, versionHex) {
+  function cidStringToContenthashHex(cidAsString){
+    return '0x' + storageSystemHexIPFS + cidStringToCid1HexRaw(cidAsString);
+  }
+
+  function updateHash(contenthashHex, versionHex) {
     return web3_utils.soliditySha3(
-      {t: 'bytes', v: cidHex},
-      {t: 'bytes32', v: versionHex}
+      {t: 'bytes', v: contenthashHex},
+      {t: 'uint64', v: versionHex}
     );
   }
 
-  function signatureDataCreate(web3, account, cidBase58, versionHex) {
+  function signatureDataCreate(web3, account, contenthash, versionHex) {
     // create the hash that will be signed
     var hash = updateHash(
-      cidStringToCid1HexRaw(cidBase58),
+      contenthash,
       versionHex
     );
     var sig = account.sign(hash);
     return({
-      cid: cidBase58,
+      contenthash: contenthash,
       version: versionHex,
       address: account.address,
       sig: {
@@ -103,7 +106,7 @@
 
   function signatureDataValidate(web3, signatureData){
     var hash = updateHash(
-      cidStringToCid1HexRaw(signatureData.cid),
+      signatureData.contenthash,
       signatureData.version
     );
 
@@ -140,13 +143,33 @@
     return addr.replace(/^0x/, '').toLowerCase() === signatureData.address.replace(/^0x/, '').toLowerCase();
   }
 
+  
+  function toCid1(cid){
+    return (new Cids(cid)).toV1().toBaseEncodedString('base58btc');
+  }
+
+  function contenthashHexToCid(contenthash){
+    contenthash = contenthash.replace(/^0x/, '');
+
+    if (contenthash.substring(0,4).toLowerCase() !== storageSystemHexIPFS)
+      throw 'first byte of contenthash must be 0x' + storageSystemHexIPFS;
+
+    // remove byte for storage system
+    contenthash = contenthash.substr(4);
+
+    var buffer = ethUtil.toBuffer('0x' + contenthash);
+    return (new Cids(buffer)).toBaseEncodedString('base58btc');
+  }
+
   return {
     versionStringToBn: versionStringToBn,
-    cid1HexRawToCid1Base58String: cid1HexRawToCid1Base58String,
     cidStringToCid1HexRaw: cidStringToCid1HexRaw,
+    cidStringToContenthashHex: cidStringToContenthashHex,
     updateHash: updateHash,
     versionStringToHex: versionStringToHex,
     signatureDataCreate: signatureDataCreate,
-    signatureDataValidate: signatureDataValidate
+    signatureDataValidate: signatureDataValidate,
+    toCid1: toCid1,
+    contenthashHexToCid: contenthashHexToCid
   };
 }));
