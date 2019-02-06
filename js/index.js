@@ -7,7 +7,7 @@
       'cids',
       'ethereumjs-util'
     ], function(Web3, Cids, ethUtil){
-      // cids seems not to have a valid AMD loader so we use Cids from window namespace 
+      // cids seems not to have a valid AMD loader so we use Cids from window namespace
       Cids = window.Cids;
       return factory(
         Web3,
@@ -32,6 +32,7 @@
   }
 }(this, function (Web3, Cids, ethUtil) {
   var web3_utils = Web3.utils;
+  var storageSystemHexIPFS = 'e301'; // as hex string // TODO 01?
 
   function versionStringToBn(versionString){
     // accepts only simple version strings like 'v0.1.2' or '0.1.2.3'
@@ -67,35 +68,32 @@
     return web3_utils.padLeft('0x' + versionStringToBn(versionString).toString(16), 64);
   }
 
-  function cid1HexRawToCid1Base58String(hexString){
-    // we are adding a code 'f' for hex to the raw string
-    var cid = new Cids('f' + hexString);
-    return cid.toV1().toBaseEncodedString('base58btc');
-  }
-
   function cidStringToCid1HexRaw(cidAsString){
-    // cid hex representation always starts with code (leading char) 'f' which is stripped here
     var cid = new Cids(cidAsString);
     var cid1Hex = cid.toV1().toBaseEncodedString('base16');
     return cid1Hex.substring(1);
   }
 
-  function updateHash(cidHex, versionHex) {
+  function cidStringToContenthashHex(cidAsString){
+    return '0x' + storageSystemHexIPFS + cidStringToCid1HexRaw(cidAsString);
+  }
+
+  function updateHash(contenthashHex, versionHex) {
     return web3_utils.soliditySha3(
-      {t: 'bytes', v: cidHex},
-      {t: 'bytes32', v: versionHex}
+      {t: 'bytes', v: contenthashHex},
+      {t: 'uint64', v: versionHex}
     );
   }
 
-  function signatureDataCreate(web3, account, cidBase58, versionHex) {
+  function signatureDataCreate(web3, account, contenthash, versionHex) {
     // create the hash that will be signed
     var hash = updateHash(
-      cidStringToCid1HexRaw(cidBase58),
+      contenthash,
       versionHex
     );
     var sig = account.sign(hash);
     return({
-      cid: cidBase58,
+      contenthash: contenthash,
       version: versionHex,
       address: account.address,
       sig: {
@@ -108,7 +106,7 @@
 
   function signatureDataValidate(web3, signatureData){
     var hash = updateHash(
-      cidStringToCid1HexRaw(signatureData.cid),
+      signatureData.contenthash,
       signatureData.version
     );
 
@@ -124,7 +122,7 @@
     return web3.eth.personal.ecRecover(hash, signature);
     */
     var msg = ethUtil.toBuffer(
-      '0x' + 
+      '0x' +
       '19457468657265756d205369676e6564204d6573736167653a0a'+ // '\x19Ethereum Signed Message:\n'
       '3332' + // length = "32"
       hash.replace(/^0x/, '')
@@ -145,19 +143,32 @@
     return addr.replace(/^0x/, '').toLowerCase() === signatureData.address.replace(/^0x/, '').toLowerCase();
   }
 
-  
   function toCid1(cid){
     return (new Cids(cid)).toV1().toBaseEncodedString('base58btc');
   }
 
+  function contenthashHexToCid(contenthash){
+    contenthash = contenthash.replace(/^0x/, '');
+
+    if (contenthash.substring(0,4).toLowerCase() !== storageSystemHexIPFS)
+      throw 'first byte of contenthash must be 0x' + storageSystemHexIPFS;
+
+    // remove byte for storage system
+    contenthash = contenthash.substr(4);
+
+    var buffer = ethUtil.toBuffer('0x' + contenthash);
+    return (new Cids(buffer)).toBaseEncodedString('base58btc');
+  }
+
   return {
     versionStringToBn: versionStringToBn,
-    cid1HexRawToCid1Base58String: cid1HexRawToCid1Base58String,
     cidStringToCid1HexRaw: cidStringToCid1HexRaw,
+    cidStringToContenthashHex: cidStringToContenthashHex,
     updateHash: updateHash,
     versionStringToHex: versionStringToHex,
     signatureDataCreate: signatureDataCreate,
     signatureDataValidate: signatureDataValidate,
-    toCid1: toCid1
+    toCid1: toCid1,
+    contenthashHexToCid: contenthashHexToCid
   };
 }));

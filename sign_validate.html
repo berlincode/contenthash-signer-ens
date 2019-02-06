@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
-    <title>Ipfs-Signer Example</title>
+    <title>Contenthash-Signer-ENS Example</title>
 
     <script type="text/javascript" src="assets/js/require.js"></script>
 
@@ -14,8 +14,14 @@ input[type='text']{
     </style>
 </head>
 <body>
-    <h1>Ipfs-Signer Example</h1>
-    This is the online example of <a href="https://github.com/berlincode/ipfs-signer">https://github.com/berlincode/ipfs-signer</a>
+    <h1>Contenthash-Signer-ENS Example</h1>
+    <p>
+        This is the online example of <a href="https://github.com/berlincode/contenthash-signer-ens">https://github.com/berlincode/contenthash-signer-ens</a>
+    </p>
+
+    <p>
+        There is a companion tool to <a href="contenthash_converter.html">convert between IPFS CIDs and multicodec contenthashes</a>.
+    </p>
 
     <h2>Sign content</h2>
     <form>
@@ -25,15 +31,11 @@ input[type='text']{
         </div>
         <div>
             IPFS CID/hash:
-            <input id="signCid" value="zdj7WmYPgTE1BKJkysxAfUzgC4f4RGaQDLzZyRzPFfqwFSQ9W" placeholder="zdj7WmYPgTE1BKJkysxAfUzgC4f4RGaQDLzZyRzPFfqwFSQ9W" type="text">
+            <input id="signCid" value="QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya" placeholder="QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya" type="text">
         </div>
         <div>
             Version (your custom version):
             <input id="signVersion" value="v1.2.3" placeholder="v1.2.3" type="text">
-        </div>
-        <div>
-            Force CID1 (convert CID to CID1 before signing):
-            <input id="signForceCid1" type="checkbox" value="1" checked>
         </div>
         <button id="signBtn">Sign</button>
     </form>
@@ -45,13 +47,13 @@ input[type='text']{
     <form>
         <div>
             <textarea id="validateSignature" rows="10" cols="100">{
-  "cid": "zdj7WmYPgTE1BKJkysxAfUzgC4f4RGaQDLzZyRzPFfqwFSQ9W",
+  "contenthash": "0xe30101701220ef64d0e6f7a121ce13f398c14c143aaf7fa861a216e433c4ad185c7286c6adb1",
   "version": "0x0000000000000000000000000000000000000000000000000001000200030000",
   "address": "0x384485D74cFBd5289B852824E6D1D8C4b77acab4",
   "sig": {
     "v": "0x1c",
-    "r": "0xab59fdd02a63e40b40b29a6bd83a1a7daab2bc27fbae11eaff2173f580db4aca",
-    "s": "0x58bf209ca4ee44aaf4c8965b8510d00fd090205dfd65e19a35572e5001bd5e50"
+    "r": "0x92117d4045e9e53a6bd01f141eccfdc52a0ac30e4ec96f0a4315e909a148e909",
+    "s": "0x11c1f37fb3b6734355fc5a8415c129fc29cf750e98bae67255de7d16e9a76318"
   }
 }</textarea>
         </div>
@@ -59,19 +61,6 @@ input[type='text']{
     </form>
     Result:<br/>
     <textarea id="validateResult" rows="1" cols="100"></textarea>
-    <hr/>
-
-    <h2>IPFS convert CID to CID0 and CID1 (base58 and hex)</h2>
-    IPFS CID/hash (CID0 or CID1):
-    <form>
-        <div>
-            <input id="convertInputCid" value="QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya" placeholder="QmeT9K2A9hqhtGa2RvXNopE6SD58gfvrhf2TiTHB7osVya" type="text">
-        </div>
-        <button id="convertBtn">Convert</button>
-    </form>
-    Result:<br/>
-    <textarea id="convertResult" rows="6" cols="100"></textarea>
-    <hr/>
 
     <script>
 
@@ -79,21 +68,17 @@ require.config({
   paths: {
     'web3': 'assets/js/web3',
     'ethereumjs-util': 'assets/js/ethereumjs-util',
-    'ipfsSigner': 'js/index',
+    'contenthash-signer-ens': 'js/index',
     'cids': 'node_modules/cids/dist/index'
   }
 });
 
 require(
   [
-    'ipfsSigner',
-    'web3',
-    'cids'
+    'contenthash-signer-ens',
+    'web3'
   ],
-  function(ipfsSigner, Web3, Cids){
-
-    // cids seems not to have a valid AMD loader so we use Cids from window namespace 
-    Cids = window.Cids;
+  function(contenthashSignerEns, Web3){
 
     document.getElementById('signBtn').onclick = function(evt){
       evt.preventDefault();
@@ -106,17 +91,13 @@ require(
         var accountSign = web3.eth.accounts.privateKeyToAccount('0x' + document.getElementById('signPrivateKey').value.replace(/^0x/,''));
         var cid = document.getElementById('signCid').value;
         var versionString = document.getElementById('signVersion').value;
-        var forceCid1 = document.getElementById('signForceCid1').checked;
 
-        if (forceCid1){
-          cid = ipfsSigner.toCid1(cid);
-        }
-
-        var signatureData = ipfsSigner.signatureDataCreate(
+        var contenthashHex = contenthashSignerEns.cidStringToContenthashHex(cid);
+        var signatureData = contenthashSignerEns.signatureDataCreate(
           web3,
           accountSign,
-          cid,
-          ipfsSigner.versionStringToHex(versionString)
+          contenthashHex,
+          contenthashSignerEns.versionStringToHex(versionString)
         );
 
         document.getElementById('signResult').value = JSON.stringify(signatureData, null, 2);
@@ -135,7 +116,7 @@ require(
       try {
         var web3 = new Web3();
 
-        var success = ipfsSigner.signatureDataValidate(web3, JSON.parse(document.getElementById('validateSignature').value));
+        var success = contenthashSignerEns.signatureDataValidate(web3, JSON.parse(document.getElementById('validateSignature').value));
         document.getElementById('validateResult').value = (success? 'Validation success': 'Validation error');
       
       } catch (err){
@@ -143,28 +124,6 @@ require(
       }
     };
 
-
-    document.getElementById('convertBtn').onclick = function(evt){
-      evt.preventDefault();
-
-      // clear
-      document.getElementById('convertResult').value = '';
-
-      try {
-        var cid = new Cids(document.getElementById('convertInputCid').value);
-
-        document.getElementById('convertResult').value = (
-          'CID (default encoding base58btc)\n' +
-          'CID0: ' + cid.toV0().toBaseEncodedString('base58btc') + '\n' +
-          'CID1: ' + cid.toV1().toBaseEncodedString('base58btc') + '\n' +
-          '\n' +
-          'CID1 (for ethereum as hex16 - first char defines code which is always "f" for hex\n' +
-          'CID1 (hex): ' + cid.toV1().toBaseEncodedString('base16')
-        );
-      } catch (err) {
-        document.getElementById('convertResult').value = 'Error';
-      }
-    };
   }
 );
 
