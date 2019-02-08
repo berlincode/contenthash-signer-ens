@@ -65,7 +65,7 @@
   }
 
   function versionStringToHex(versionString){
-    return web3_utils.padLeft('0x' + versionStringToBn(versionString).toString(16), 64);
+    return web3_utils.padLeft('0x' + versionStringToBn(versionString).toString(16), 16);
   }
 
   function cidStringToCid1HexRaw(cidAsString){

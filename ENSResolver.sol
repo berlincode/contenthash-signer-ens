@@ -12,7 +12,7 @@
  Contact:
  elastic.code@gmail.com
 
- Version 0.5.1
+ Version 0.6.0
 
  This contract acts as a ens resolver.
  Implements contenthash field for ENS (EIP 1577) (https://eips.ethereum.org/EIPS/eip-1577).
@@ -46,10 +46,10 @@ interface ENS {
 }
 
 
-contract IpfsCidRegistry { // TODO rename to ...Relsover
+contract ResolverContenthashSignerENS {
 
-    /* public variables / constants */
-    uint64 public version = (
+    /* public constant contractVersion */
+    uint64 public constant contractVersion = (
         (0 << 32) + /* major */
         (5 << 16) + /* minor */
         0 /* bugfix */
@@ -98,6 +98,12 @@ contract IpfsCidRegistry { // TODO rename to ...Relsover
         // set version to 0xffffffffffffffff if contenthash is set directly by owner
         records[node].version = 0xffffffffffffffff;
         emit ContenthashChanged(node, hash);
+    }
+
+    function clearContenthash(bytes32 node) external onlyOwner(node) {
+        records[node].contenthash = "";
+        records[node].version = 0x0;
+        emit ContenthashChanged(node, "");
     }
 
     /**

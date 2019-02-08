@@ -17,12 +17,12 @@ var logger = {
 
 const contractInterface = JSON.parse(
   fs.readFileSync(
-    'IpfsSigner_sol_IpfsCidRegistry.abi',
+    'ENSResolver_sol_ResolverContenthashSignerENS.abi',
     {encoding: 'utf8'}
   )
 );
 const contractBytecode = fs.readFileSync(
-  'IpfsSigner_sol_IpfsCidRegistry.bin',
+  'ENSResolver_sol_ResolverContenthashSignerENS.bin',
   {encoding: 'utf8'}
 );
 
