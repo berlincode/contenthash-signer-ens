@@ -3,44 +3,69 @@
 /* eslint-env es6 */
 /*eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
 
-const contenthashSignerEns = require('../js/index.js');
 const Web3 = require('web3');
 const minimist = require('minimist');
 const readline = require('readline');
 const Writable = require('stream').Writable;
+const fs = require('fs');
+const path = require('path');
+
+const contractInterface = JSON.parse(
+  fs.readFileSync(
+    path.join(__dirname, '..', 'ENSResolver_sol_ResolverContenthashSignerENS.abi'),
+    {encoding: 'utf8'}
+  )
+);
+
+const contractBytecode = fs.readFileSync(
+  path.join(__dirname, '..', 'ENSResolver_sol_ResolverContenthashSignerENS.bin'),
+  {encoding: 'utf8'}
+);
 
 var argv = minimist(process.argv.slice(2), {
+  string: ['registry'],
   boolean: ['noninteractive']
 });
 
-if (argv._.length !== 2){
+if ((argv._.length !== 1) || (!argv.registry)){
   console.log('usage:');
-  console.log('    generate.js <ipfs-cid0-or-cid1> <version-string>');
-  console.log('    --noninteractive     : read public key directly from stdin');
-  console.log('');
-  console.log('The private key needs to be supplied via stdin.');
+  console.log('    deploy_resolver.js <geth-provider> --registry=<registry-addr>');
   console.log('');
   console.log('example (bash):');
-  console.log('    ./generate.js --noninteractive "$(ipfs add -r -q --only-hash "$PUBLIC_DIR" 2>/dev/null | tail -1)" v1.2.3 <<< "0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35" > SIGNATURE');
-  console.log('example (bash):');
-  console.log('    ./generate.js --noninteractive "zdj7WmYPgTE1BKJkysxAfUzgC4f4RGaQDLzZyRzPFfqwFSQ9W" v1.2.3 <<< "0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35" > SIGNATURE');
+  console.log('    ./deploy_resolver.js https://mainnet.infura.io/<your-token> --registry=0x314159265dd8dbb310642f98f50c066173c1259b --noninteractive <<< 0x88779b7111e6e83ecc8fdb173f017262eff4180e61967ac2b12c4bcf6d9df1a1');
   process.exit(1);
 }
 
-var ipfsCid = argv._[0];
-const versionString = argv._[1];
+const provider = argv._[0];
+const registryAddr = argv.registry;
 const noninteractive = argv.noninteractive;
 
-var sign = function(privKey){
-  const web3 = new Web3();
+const web3 = new Web3(new Web3.providers.HttpProvider(provider));
+const contract = new web3.eth.Contract(contractInterface);
 
-  var account = web3.eth.accounts.privateKeyToAccount(privKey);
 
-  const versionHex = contenthashSignerEns.versionStringToHex(versionString);
-  const contenthashHex = contenthashSignerEns.cidStringToContenthashHex(ipfsCid);
-  const signatureData = contenthashSignerEns.signatureDataCreate(web3, account, contenthashHex, versionHex);
-  return signatureData;
-};
+async function deploy(privateKey){
+  const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+  web3.eth.accounts.wallet.add(account);
+
+  const contractInstanceResolver = await contract.deploy(
+    {
+      data: '0x' + contractBytecode,
+      arguments: [
+        registryAddr
+      ]
+    }
+  )
+    .send(
+      {
+        gas: 4000000,
+        gasPrice: 10000000000, // TODO
+        from: account.address
+      }
+    );
+
+  return contractInstanceResolver;
+}
 
 function getPrivateKeyStdin(noninteractive){
   return new Promise(
@@ -95,11 +120,16 @@ function getPrivateKeyStdin(noninteractive){
 
 getPrivateKeyStdin(noninteractive)
   .then(function(privateKey){
-    console.log(JSON.stringify(sign(privateKey), null, 2));
+    return deploy(privateKey);
+  })
+  .then(function(contractInstanceResolver){
+    const addr = contractInstanceResolver.options.address;
+    console.log('deployed contract address:', addr);
     process.exit();
   })
   .catch(function(err){
     console.error('Error', err);
     process.exit(1);
   });
+
 

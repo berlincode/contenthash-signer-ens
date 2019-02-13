@@ -31,7 +31,7 @@ module.exports = {
         "no-warning-comments": [
             1,
             {
-                "terms": ["todo", "fixme"], 
+                "terms": ["todo", "fixme"],
                 "location": "anywhere"
             }
         ],

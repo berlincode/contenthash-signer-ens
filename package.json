@@ -1,6 +1,6 @@
 {
   "name": "contenthash-signer-ens",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Sign EIP-1577 compatible contenthashes (e.g. IPFS CIDs) hashes and content version (in an ethereum compatible way)",
   "homepage": "https://github.com/berlincode/contenthash-signer-ens",
   "license": "MIT",

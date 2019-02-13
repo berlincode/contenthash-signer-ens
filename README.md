@@ -4,7 +4,7 @@ Contenthash-Signer-ENS
 [![Travis CI](https://travis-ci.org/berlincode/contenthash-signer-ens.svg?branch=master&style=flat)](https://travis-ci.org/berlincode/contenthash-signer-ens)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/berlincode/contenthash-signer-ens/blob/master/LICENSE)
 
-**0xe30101701220ef64d0e6f7a121ce13f398c14c143aaf7fa861a216e433c4ad185c7286c6adb1**
+**Sign ipfs CID hashes and content version (in an ethereum compatible way)**
 
 This tool is an easy way to sign a distribution of files (e.g. a web page or a distributed app). It's intended to
 be used with ipfs CIDs, so that you can directly access the signed content on any IPFS gateway.
@@ -24,7 +24,7 @@ npm install
 ```
 3. Create a signature of the js/ directory along with the version 'v1.2.3':¹
 ```bash
-./examples/generate.js --quiet "$(ipfs add -r -q --only-hash js" 2>/dev/null | tail -1)" v1.2.3 <<< "0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35" > SIGNATURE
+./examples/generate.js ----noninteractive "$(ipfs add -r -q --only-hash js" 2>/dev/null | tail -1)" v1.2.3 <<< "0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35" > SIGNATURE
 ```
 3. optionally validate the just create signature:
 ```bash
@@ -35,6 +35,9 @@ npm install
 ¹) you need to have the 'ipfs' command line tool installed
 
 
+
+The resolver is currently deployed at:
+ * ropsten: 0xc42fb86610be1f03b366251353cb41475cfeab11
 
 Public repository
 -----------------

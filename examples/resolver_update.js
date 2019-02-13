@@ -3,44 +3,76 @@
 /* eslint-env es6 */
 /*eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
 
-const contenthashSignerEns = require('../js/index.js');
 const Web3 = require('web3');
 const minimist = require('minimist');
 const readline = require('readline');
 const Writable = require('stream').Writable;
+const fs = require('fs');
+const path = require('path');
+const namehash = require('eth-ens-namehash');
+
+const contractInterface = JSON.parse(
+  fs.readFileSync(
+    path.join(__dirname, '..', 'ENSResolver_sol_ResolverContenthashSignerENS.abi'),
+    {encoding: 'utf8'}
+  )
+);
 
 var argv = minimist(process.argv.slice(2), {
+  string: ['resolver', 'signaturefile', 'name'],
   boolean: ['noninteractive']
 });
 
-if (argv._.length !== 2){
+if (argv._.length !== 1){
   console.log('usage:');
-  console.log('    generate.js <ipfs-cid0-or-cid1> <version-string>');
-  console.log('    --noninteractive     : read public key directly from stdin');
-  console.log('');
-  console.log('The private key needs to be supplied via stdin.');
+  console.log('    update_resolver.js <geth-provider> --resolver=<resolver-addr> --signaturefile=<json-signature-file> --name=<your.name.eth>');
   console.log('');
   console.log('example (bash):');
-  console.log('    ./generate.js --noninteractive "$(ipfs add -r -q --only-hash "$PUBLIC_DIR" 2>/dev/null | tail -1)" v1.2.3 <<< "0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35" > SIGNATURE');
-  console.log('example (bash):');
-  console.log('    ./generate.js --noninteractive "zdj7WmYPgTE1BKJkysxAfUzgC4f4RGaQDLzZyRzPFfqwFSQ9W" v1.2.3 <<< "0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35" > SIGNATURE');
+  console.log('    ./update_resolver.js https://mainnet.infura.io/<your-token> --resolver=0x... --signaturefile=SIGNATURE.json --noninteractive <<< 0x88779b7111e6e83ecc8fdb173f017262eff4180e61967ac2b12c4bcf6d9df1a1');
   process.exit(1);
 }
 
-var ipfsCid = argv._[0];
-const versionString = argv._[1];
+const provider = argv._[0];
+const resolverAddr = argv.resolver;
+const signaturefile = argv.signaturefile;
+const node = namehash.hash(argv.name);
 const noninteractive = argv.noninteractive;
 
-var sign = function(privKey){
-  const web3 = new Web3();
+const signatureData = JSON.parse(
+  fs.readFileSync(
+    signaturefile,
+    {encoding: 'utf8'}
+  )
+);
 
-  var account = web3.eth.accounts.privateKeyToAccount(privKey);
 
-  const versionHex = contenthashSignerEns.versionStringToHex(versionString);
-  const contenthashHex = contenthashSignerEns.cidStringToContenthashHex(ipfsCid);
-  const signatureData = contenthashSignerEns.signatureDataCreate(web3, account, contenthashHex, versionHex);
-  return signatureData;
-};
+const web3 = new Web3(new Web3.providers.HttpProvider(provider));
+const contractInstanceResolver = new web3.eth.Contract(contractInterface, resolverAddr);
+
+async function updateContenthash(privateKey){
+  const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+  web3.eth.accounts.wallet.add(account);
+
+  if (signatureData.contenthash == await contractInstanceResolver.methods.contenthash(node).call()){
+    // nothing to to
+    return;
+  }
+
+  await contractInstanceResolver.methods.setContenthashBySignature(
+    node,
+    signatureData.contenthash,
+    signatureData.version,
+    signatureData.sig
+  )
+    .send(
+      {
+        gas: 1000000,
+        gasPrice: 10000000000, // TODO
+        from: account.address
+      }
+    );
+  return;
+}
 
 function getPrivateKeyStdin(noninteractive){
   return new Promise(
@@ -95,11 +127,13 @@ function getPrivateKeyStdin(noninteractive){
 
 getPrivateKeyStdin(noninteractive)
   .then(function(privateKey){
-    console.log(JSON.stringify(sign(privateKey), null, 2));
+    return updateContenthash(privateKey);
+  })
+  .then(function(){
+    console.log('Success.');
     process.exit();
   })
   .catch(function(err){
     console.error('Error', err);
     process.exit(1);
   });
-
