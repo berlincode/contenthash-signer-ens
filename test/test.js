@@ -54,12 +54,7 @@ function setup(done){
     ]
   };
 
-  //const provider = ganache.provider(options);
-  //web3 = new Web3(provider);
-
-  web3 = new Web3();
-  const provider = ganache.provider(options);
-  web3.setProvider(provider);
+  web3 = new Web3(ganache.provider(options));
 
   accountSign = web3.eth.accounts.privateKeyToAccount('0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35');
 
@@ -127,14 +122,14 @@ describe('Test contract and signature', function() {
         );
       assert.notEqual(contractInstanceResolver.options.address, undefined);
 
-      await contractInstanceRegistry.methods.setSubnodeOwner('0x0', sha3('eth'), accountDefault)
+      await contractInstanceRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000', sha3('eth'), accountDefault)
         .send({
           gas: 4000000,
           gasPrice: '30000000000000',
           from: accountDefault
         });
 
-      await contractInstanceRegistry.methods.setSubnodeOwner('0x0', sha3('ethsig'), accountSign.address)
+      await contractInstanceRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000', sha3('ethsig'), accountSign.address)
         .send({
           gas: 4000000,
           gasPrice: '30000000000000',
@@ -145,7 +140,7 @@ describe('Test contract and signature', function() {
     it('Check that no contenthash is returned from contract', async function() {
       const result = await contractInstanceResolver.methods.contenthash(nodeBySignature).call();
 
-      assert.equal(result, null);
+      assert.equal(result, '0x'); // TODO null
 
       //const version = Web3.utils.toBN(result.version);
       //assert.ok(version.isZero());
@@ -183,7 +178,7 @@ describe('Test contract and signature', function() {
 
       assert.notEqual(result, null);
 
-      const contenthashBn = Web3.utils.toBN(result);
+      const contenthashBn = web3.utils.toBN(result);
       //const version = Web3.utils.toBN(result.version);
 
       assert.ok(! contenthashBn.isZero());
@@ -272,7 +267,7 @@ describe('Test contract and signature', function() {
     it('returns empty when fetching nonexistent contenthash', async () => {
       assert.equal(
         await contractInstanceResolver.methods.contenthash(namehash.hash('unknown')).call(),
-        null
+        '0x'// TODO null
       );
     });
   });
