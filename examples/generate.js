@@ -32,9 +32,9 @@ const versionString = argv._[1];
 const noninteractive = argv.noninteractive;
 
 var sign = function(privKey){
-  const web3 = new Web3();
+  const web3 = new Web3('http://localhost:8545'); // TODO dummy
 
-  var account = web3.eth.accounts.privateKeyToAccount(privKey);
+  const account = web3.eth.accounts.privateKeyToAccount(privKey);
 
   const versionHex = contenthashSignerEns.versionStringToHex(versionString);
   const contenthashHex = contenthashSignerEns.cidStringToContenthashHex(ipfsCid);

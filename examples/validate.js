@@ -23,7 +23,7 @@ if (argv._.length !== 1){
 const filename = argv._[0];
 const quiet = argv.quiet;
 
-const web3 = new Web3();
+const web3 = new Web3('http://localhost:8545'); // TODO dummy
 const signatureData = JSON.parse(fs.readFileSync(filename, 'utf8'));
 const success = contenthashSignerEns.signatureDataValidate(web3, signatureData);
 

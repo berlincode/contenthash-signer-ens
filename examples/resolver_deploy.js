@@ -40,7 +40,7 @@ const provider = argv._[0];
 const registryAddr = argv.registry;
 const noninteractive = argv.noninteractive;
 
-const web3 = new Web3(new Web3.providers.HttpProvider(provider));
+const web3 = new Web3(provider);
 const contract = new web3.eth.Contract(contractInterface);
 
 

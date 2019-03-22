@@ -46,7 +46,7 @@ const signatureData = JSON.parse(
 );
 
 
-const web3 = new Web3(new Web3.providers.HttpProvider(provider));
+const web3 = new Web3(provider);
 const contractInstanceResolver = new web3.eth.Contract(contractInterface, resolverAddr);
 
 async function updateContenthash(privateKey){

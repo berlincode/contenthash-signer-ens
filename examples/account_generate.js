@@ -3,12 +3,12 @@
 /* eslint-env node, es6 */
 /* eslint-disable no-console */
 
-var Web3 = require('web3');
+const Web3 = require('web3');
 
-var web3 = new Web3();
+const web3 = new Web3('http://localhost:8545'); // TODO dummy
 
-var newAccount = web3.eth.accounts.create();
-var addr = newAccount.address;
-var pk = newAccount.privateKey;
+const newAccount = web3.eth.accounts.create();
+const addr = newAccount.address;
+const pk = newAccount.privateKey;
 console.log(JSON.stringify({address: addr, privateKey: pk}, null, 2));
 
