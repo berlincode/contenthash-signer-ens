@@ -1,0 +1,142 @@
+diff --git a/node_modules/web3-core-method/dist/web3-core-method.cjs.js b/node_modules/web3-core-method/dist/web3-core-method.cjs.js
+index 40d7dfd..1995e9f 100644
+--- a/node_modules/web3-core-method/dist/web3-core-method.cjs.js
++++ b/node_modules/web3-core-method/dist/web3-core-method.cjs.js
+@@ -1019,6 +1019,10 @@ function (_AbstractMethod) {
+             return;
+           }
+           _this2.promiEvent.emit('confirmation', confirmations, _this2.afterExecution(receipt));
++          // ulfi: quick hack to finish promise
++          _this2.promiEvent.removeAllListeners();
++          transactionConfirmationSubscription.unsubscribe();
++          _this2.promiEvent.resolve(_this2.afterExecution(receipt));
+         }, function (error) {
+           _this2.handleError(error, receipt, confirmations);
+         }, function () {
+@@ -1051,7 +1055,8 @@ function (_AbstractMethod) {
+   }, {
+     key: "hasRevertReceiptStatus",
+     value: function hasRevertReceiptStatus(receipt) {
+-      return Boolean(parseInt(receipt.status)) === false && receipt.status !== undefined && receipt.status !== null;
++//      return Boolean(parseInt(receipt.status)) === false && receipt.status !== undefined && receipt.status !== null;
++      return (!(Boolean(parseInt(receipt.status)) === true || receipt.status === true)) && receipt.status !== undefined && receipt.status !== null;
+     }
+   }], [{
+     key: "Type",
+@@ -1110,8 +1115,10 @@ function (_SendTransactionMetho) {
+         this.parameters[0]['gasPrice'] = this.moduleInstance.defaultGasPrice;
+       }
+       if (this.hasAccounts() && this.isDefaultSigner()) {
+-        if (this.moduleInstance.accounts.wallet[this.parameters[0].from]) {
+-          this.sendRawTransaction(this.moduleInstance.accounts.wallet[this.parameters[0].from].privateKey).catch(function (error) {
++//        if (this.moduleInstance.accounts.wallet[this.parameters[0].from]) {
++        if (this.moduleInstance.accounts.wallet.accounts[this.parameters[0].from]) {
++//          this.sendRawTransaction(this.moduleInstance.accounts.wallet[this.parameters[0].from].privateKey).catch(function (error) {
++          this.sendRawTransaction(this.moduleInstance.accounts.wallet.accounts[this.parameters[0].from].privateKey).catch(function (error) {
+             _this2.handleError(error, false, 0);
+           });
+           return this.promiEvent;
+@@ -1185,7 +1192,8 @@ function (_SendTransactionMetho) {
+   }, {
+     key: "hasAccounts",
+     value: function hasAccounts() {
+-      return this.moduleInstance.accounts && this.moduleInstance.accounts.accountsIndex > 0;
++//      return this.moduleInstance.accounts && this.moduleInstance.accounts.accountsIndex > 0;
++      return this.moduleInstance.accounts && this.moduleInstance.accounts.wallet.accountsIndex > 0;
+     }
+   }, {
+     key: "hasCustomSigner",
+diff --git a/node_modules/web3-core-method/dist/web3-core-method.esm.js b/node_modules/web3-core-method/dist/web3-core-method.esm.js
+index 8c189d2..5558ab6 100644
+--- a/node_modules/web3-core-method/dist/web3-core-method.esm.js
++++ b/node_modules/web3-core-method/dist/web3-core-method.esm.js
+@@ -626,6 +626,10 @@ class AbstractObservedTransactionMethod extends AbstractMethod {
+           return;
+         }
+         this.promiEvent.emit('confirmation', confirmations, this.afterExecution(receipt));
++        // ulfi: quick hack to finish promise
++        this.promiEvent.removeAllListeners();
++        transactionConfirmationSubscription.unsubscribe();
++        this.promiEvent.resolve(this.afterExecution(receipt));
+       }, error => {
+         this.handleError(error, receipt, confirmations);
+       }, () => {
+@@ -654,7 +658,8 @@ class AbstractObservedTransactionMethod extends AbstractMethod {
+     this.promiEvent.reject(error);
+   }
+   hasRevertReceiptStatus(receipt) {
+-    return Boolean(parseInt(receipt.status)) === false && receipt.status !== undefined && receipt.status !== null;
++//    return Boolean(parseInt(receipt.status)) === false && receipt.status !== undefined && receipt.status !== null;
++    return (!(Boolean(parseInt(receipt.status)) === true || receipt.status === true)) && receipt.status !== undefined && receipt.status !== null;
+   }
+ }
+ 
+@@ -691,8 +696,10 @@ class EthSendTransactionMethod extends SendTransactionMethod {
+       this.parameters[0]['gasPrice'] = this.moduleInstance.defaultGasPrice;
+     }
+     if (this.hasAccounts() && this.isDefaultSigner()) {
+-      if (this.moduleInstance.accounts.wallet[this.parameters[0].from]) {
+-        this.sendRawTransaction(this.moduleInstance.accounts.wallet[this.parameters[0].from].privateKey).catch(error => {
++//      if (this.moduleInstance.accounts.wallet[this.parameters[0].from]) {
++      if (this.moduleInstance.accounts.wallet.accounts[this.parameters[0].from]) {
++//        this.sendRawTransaction(this.moduleInstance.accounts.wallet[this.parameters[0].from].privateKey).catch(error => {
++        this.sendRawTransaction(this.moduleInstance.accounts.wallet.accounts[this.parameters[0].from].privateKey).catch(error => {
+           this.handleError(error, false, 0);
+         });
+         return this.promiEvent;
+@@ -724,7 +731,8 @@ class EthSendTransactionMethod extends SendTransactionMethod {
+     return this.moduleInstance.transactionSigner.constructor.name === 'TransactionSigner';
+   }
+   hasAccounts() {
+-    return this.moduleInstance.accounts && this.moduleInstance.accounts.accountsIndex > 0;
++//    return this.moduleInstance.accounts && this.moduleInstance.accounts.accountsIndex > 0;
++    return this.moduleInstance.accounts && this.moduleInstance.accounts.wallet.accountsIndex > 0;
+   }
+   hasCustomSigner() {
+     return this.moduleInstance.transactionSigner.constructor.name !== 'TransactionSigner';
+diff --git a/node_modules/web3-core-method/dist/web3-core-method.umd.js b/node_modules/web3-core-method/dist/web3-core-method.umd.js
+index 7f3dc26..d8b3391 100644
+--- a/node_modules/web3-core-method/dist/web3-core-method.umd.js
++++ b/node_modules/web3-core-method/dist/web3-core-method.umd.js
+@@ -1017,6 +1017,10 @@
+                 return;
+               }
+               _this2.promiEvent.emit('confirmation', confirmations, _this2.afterExecution(receipt));
++              // ulfi: quick hack to finish promise
++              _this2.promiEvent.removeAllListeners();
++              transactionConfirmationSubscription.unsubscribe();
++              _this2.promiEvent.resolve(_this2.afterExecution(receipt));
+             }, function (error) {
+               _this2.handleError(error, receipt, confirmations);
+             }, function () {
+@@ -1049,7 +1053,8 @@
+       }, {
+         key: "hasRevertReceiptStatus",
+         value: function hasRevertReceiptStatus(receipt) {
+-          return Boolean(parseInt(receipt.status)) === false && receipt.status !== undefined && receipt.status !== null;
++//          return Boolean(parseInt(receipt.status)) === false && receipt.status !== undefined && receipt.status !== null;
++          return (!(Boolean(parseInt(receipt.status)) === true || receipt.status === true)) && receipt.status !== undefined && receipt.status !== null;
+         }
+       }], [{
+         key: "Type",
+@@ -1108,7 +1113,9 @@
+             this.parameters[0]['gasPrice'] = this.moduleInstance.defaultGasPrice;
+           }
+           if (this.hasAccounts() && this.isDefaultSigner()) {
+-            if (this.moduleInstance.accounts.wallet[this.parameters[0].from]) {
++//            if (this.moduleInstance.accounts.wallet[this.parameters[0].from]) {
++            if (this.moduleInstance.accounts.wallet.accounts[this.parameters[0].from]) {
++//              this.sendRawTransaction(this.moduleInstance.accounts.wallet[this.parameters[0].from].privateKey).catch(function (error) {
+               this.sendRawTransaction(this.moduleInstance.accounts.wallet[this.parameters[0].from].privateKey).catch(function (error) {
+                 _this2.handleError(error, false, 0);
+               });
+@@ -1183,7 +1190,8 @@
+       }, {
+         key: "hasAccounts",
+         value: function hasAccounts() {
+-          return this.moduleInstance.accounts && this.moduleInstance.accounts.accountsIndex > 0;
++//          return this.moduleInstance.accounts && this.moduleInstance.accounts.accountsIndex > 0;
++          return this.moduleInstance.accounts && this.moduleInstance.accounts.wallet.accountsIndex > 0;
+         }
+       }, {
+         key: "hasCustomSigner",

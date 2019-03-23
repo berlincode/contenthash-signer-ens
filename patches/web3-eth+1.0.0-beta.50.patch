@@ -1,0 +1,51 @@
+diff --git a/node_modules/web3-eth/dist/web3-eth.cjs.js b/node_modules/web3-eth/dist/web3-eth.cjs.js
+index 5d8b342..49d3b32 100644
+--- a/node_modules/web3-eth/dist/web3-eth.cjs.js
++++ b/node_modules/web3-eth/dist/web3-eth.cjs.js
+@@ -56,9 +56,9 @@ function () {
+                 }
+                 throw new Error('No privateKey given to the TransactionSigner.');
+               case 2:
+-                if (privateKey.startsWith('0x')) {
+-                  privateKey = privateKey.substring(2);
+-                }
++//                if (privateKey.startsWith('0x')) {
++//                  privateKey = privateKey.substring(2);
++//                }
+                 transaction = this.formatters.txInputFormatter(transaction);
+                 transaction.to = transaction.to || '0x';
+                 transaction.data = transaction.data || '0x';
+diff --git a/node_modules/web3-eth/dist/web3-eth.esm.js b/node_modules/web3-eth/dist/web3-eth.esm.js
+index 9bdb23d..86118dd 100644
+--- a/node_modules/web3-eth/dist/web3-eth.esm.js
++++ b/node_modules/web3-eth/dist/web3-eth.esm.js
+@@ -27,9 +27,9 @@ class TransactionSigner {
+     if (!privateKey) {
+       throw new Error('No privateKey given to the TransactionSigner.');
+     }
+-    if (privateKey.startsWith('0x')) {
+-      privateKey = privateKey.substring(2);
+-    }
++//    if (privateKey.startsWith('0x')) {
++//      privateKey = privateKey.substring(2);
++//    }
+     transaction = this.formatters.txInputFormatter(transaction);
+     transaction.to = transaction.to || '0x';
+     transaction.data = transaction.data || '0x';
+diff --git a/node_modules/web3-eth/dist/web3-eth.umd.js b/node_modules/web3-eth/dist/web3-eth.umd.js
+index 13c7747..463d6cc 100644
+--- a/node_modules/web3-eth/dist/web3-eth.umd.js
++++ b/node_modules/web3-eth/dist/web3-eth.umd.js
+@@ -43,9 +43,9 @@
+                     }
+                     throw new Error('No privateKey given to the TransactionSigner.');
+                   case 2:
+-                    if (privateKey.startsWith('0x')) {
+-                      privateKey = privateKey.substring(2);
+-                    }
++//                    if (privateKey.startsWith('0x')) {
++//                      privateKey = privateKey.substring(2);
++//                    }
+                     transaction = this.formatters.txInputFormatter(transaction);
+                     transaction.to = transaction.to || '0x';
+                     transaction.data = transaction.data || '0x';
