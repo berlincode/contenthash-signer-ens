@@ -22,10 +22,11 @@
     "ENSResolver.sol",
     "ENSResolver_sol_ResolverContenthashSignerENS.abi",
     "ENSResolver_sol_ResolverContenthashSignerENS.bin",
-    "js/*",
     "examples/generate.js",
     "examples/validate.js",
+    "js/*",
     "LICENSE",
+    "patches/*.patch",
     "README"
   ],
   "repository": {
@@ -54,7 +55,7 @@
     "gh-pages": "^2.0.1",
     "minimist": "^1.2.0",
     "mocha": "^6.0.2",
-    "patch-package": "^6.0.5",
+    "patch-package": "6.0.5",
     "solc": "0.5.5",
     "ethlint": "^1.2.3"
   }
