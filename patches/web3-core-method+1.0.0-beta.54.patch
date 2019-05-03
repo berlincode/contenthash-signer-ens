@@ -1,11 +1,11 @@
 diff --git a/node_modules/web3-core-method/dist/web3-core-method.cjs.js b/node_modules/web3-core-method/dist/web3-core-method.cjs.js
-index 13fcdbf..029780c 100644
+index 5b312e6..c5fa6d7 100644
 --- a/node_modules/web3-core-method/dist/web3-core-method.cjs.js
 +++ b/node_modules/web3-core-method/dist/web3-core-method.cjs.js
-@@ -1026,6 +1026,10 @@ function (_AbstractMethod) {
+@@ -1064,6 +1064,10 @@ function (_AbstractMethod) {
              return;
            }
-           _this2.promiEvent.emit('confirmation', confirmations, _this2.afterExecution(receipt));
+           _this2.promiEvent.emit('confirmation', confirmations, _this2.formatters.outputTransactionFormatter(receipt));
 +          // ulfi: quick hack to finish promise
 +          _this2.promiEvent.removeAllListeners();
 +          transactionConfirmationSubscription.unsubscribe();
@@ -14,13 +14,13 @@ index 13fcdbf..029780c 100644
            _this2.handleError(error, receipt, confirmations);
          }, function () {
 diff --git a/node_modules/web3-core-method/dist/web3-core-method.esm.js b/node_modules/web3-core-method/dist/web3-core-method.esm.js
-index 28204f8..2b2d3e8 100644
+index 65c09ee..5bb5d85 100644
 --- a/node_modules/web3-core-method/dist/web3-core-method.esm.js
 +++ b/node_modules/web3-core-method/dist/web3-core-method.esm.js
-@@ -628,6 +628,10 @@ class AbstractObservedTransactionMethod extends AbstractMethod {
+@@ -650,6 +650,10 @@ class AbstractObservedTransactionMethod extends AbstractMethod {
            return;
          }
-         this.promiEvent.emit('confirmation', confirmations, this.afterExecution(receipt));
+         this.promiEvent.emit('confirmation', confirmations, this.formatters.outputTransactionFormatter(receipt));
 +        // ulfi: quick hack to finish promise
 +        this.promiEvent.removeAllListeners();
 +        transactionConfirmationSubscription.unsubscribe();
@@ -29,13 +29,13 @@ index 28204f8..2b2d3e8 100644
          this.handleError(error, receipt, confirmations);
        }, () => {
 diff --git a/node_modules/web3-core-method/dist/web3-core-method.umd.js b/node_modules/web3-core-method/dist/web3-core-method.umd.js
-index 985e3f4..7fb79d1 100644
+index 2e6eea0..ae9694c 100644
 --- a/node_modules/web3-core-method/dist/web3-core-method.umd.js
 +++ b/node_modules/web3-core-method/dist/web3-core-method.umd.js
-@@ -1024,6 +1024,10 @@
+@@ -1062,6 +1062,10 @@
                  return;
                }
-               _this2.promiEvent.emit('confirmation', confirmations, _this2.afterExecution(receipt));
+               _this2.promiEvent.emit('confirmation', confirmations, _this2.formatters.outputTransactionFormatter(receipt));
 +              // ulfi: quick hack to finish promise
 +              _this2.promiEvent.removeAllListeners();
 +              transactionConfirmationSubscription.unsubscribe();
