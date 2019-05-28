@@ -32,7 +32,7 @@
   }
 }(this, function (Web3, Cids, ethUtil) {
 
-  var web3 = new Web3('http://localhost:8545'); // TODO dummy
+  var web3 = new Web3();
   var storageSystemHexIPFS = 'e301'; // as hex string // TODO 01?
 
   function versionStringToBn(versionString){

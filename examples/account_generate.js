@@ -5,7 +5,7 @@
 
 const Web3 = require('web3');
 
-const web3 = new Web3('http://localhost:8545'); // TODO dummy
+const web3 = new Web3();
 
 const newAccount = web3.eth.accounts.create();
 const addr = newAccount.address;

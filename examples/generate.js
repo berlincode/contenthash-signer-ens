@@ -32,7 +32,7 @@ const versionString = argv._[1];
 const noninteractive = argv.noninteractive;
 
 var sign = function(privKey){
-  const web3 = new Web3('http://localhost:8545'); // TODO dummy
+  const web3 = new Web3();
 
   const account = web3.eth.accounts.privateKeyToAccount(privKey);
 

@@ -1,5 +1,5 @@
 diff --git a/node_modules/web3-providers/dist/web3-providers.cjs.js b/node_modules/web3-providers/dist/web3-providers.cjs.js
-index a5bd5b5..bc09ce7 100644
+index f124c4a..5862409 100644
 --- a/node_modules/web3-providers/dist/web3-providers.cjs.js
 +++ b/node_modules/web3-providers/dist/web3-providers.cjs.js
 @@ -407,7 +407,8 @@ function (_AbstractSocketProvid) {
@@ -24,7 +24,7 @@ index a5bd5b5..bc09ce7 100644
        _get(_getPrototypeOf(WebsocketProvider.prototype), "onClose", this).call(this);
      }
 diff --git a/node_modules/web3-providers/dist/web3-providers.esm.js b/node_modules/web3-providers/dist/web3-providers.esm.js
-index e2786de..e4d32a7 100644
+index 6d921d2..4efc999 100644
 --- a/node_modules/web3-providers/dist/web3-providers.esm.js
 +++ b/node_modules/web3-providers/dist/web3-providers.esm.js
 @@ -249,15 +249,16 @@ class WebsocketProvider extends AbstractSocketProvider {
@@ -48,7 +48,7 @@ index e2786de..e4d32a7 100644
      super.onClose();
    }
 diff --git a/node_modules/web3-providers/dist/web3-providers.umd.js b/node_modules/web3-providers/dist/web3-providers.umd.js
-index fdd799f..e3f01b8 100644
+index 1e2b02a..2e1c306 100644
 --- a/node_modules/web3-providers/dist/web3-providers.umd.js
 +++ b/node_modules/web3-providers/dist/web3-providers.umd.js
 @@ -405,7 +405,8 @@
