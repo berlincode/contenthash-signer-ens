@@ -31,7 +31,8 @@
     );
   }
 }(this, function (Web3, Cids, ethUtil) {
-  var web3_utils = Web3.utils;
+
+  var web3 = new Web3();
   var storageSystemHexIPFS = 'e301'; // as hex string // TODO 01?
 
   function versionStringToBn(versionString){
@@ -52,20 +53,20 @@
     while(fragments.length < 4)
       fragments.push('0');
 
-    var versionBn = web3_utils.toBN(0);
+    var versionBn = web3.utils.toBN(0);
     var i;
     for (i=0 ; i < fragments.length ; i++){
       var fragmentInt = Number(fragments[i]);
       if (fragmentInt > 0xffff)
         throw 'version fragment > 0xffff';
-      versionBn = versionBn.mul(web3_utils.toBN('0x10000'));
-      versionBn = versionBn.add(web3_utils.toBN(fragmentInt));
+      versionBn = versionBn.mul(web3.utils.toBN('0x10000'));
+      versionBn = versionBn.add(web3.utils.toBN(fragmentInt));
     }
     return versionBn;
   }
 
   function versionStringToHex(versionString){
-    return web3_utils.padLeft('0x' + versionStringToBn(versionString).toString(16), 64);
+    return web3.utils.padLeft('0x' + versionStringToBn(versionString).toString(16), 16);
   }
 
   function cidStringToCid1HexRaw(cidAsString){
@@ -79,7 +80,7 @@
   }
 
   function updateHash(contenthashHex, versionHex) {
-    return web3_utils.soliditySha3(
+    return web3.utils.soliditySha3(
       {t: 'bytes', v: contenthashHex},
       {t: 'uint64', v: versionHex}
     );

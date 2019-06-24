@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <title>Contenthash-Signer-ENS Example</title>
 
-    <script type="text/javascript" src="assets/js/require.js"></script>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+
+    <script type="text/javascript" src="node_modules/requirejs/require.js"></script>
 
     <style>
 input[type='text']{ 
@@ -66,7 +68,7 @@ input[type='text']{
 
 require.config({
   paths: {
-    'web3': 'assets/js/web3',
+    'web3': 'assets/js/web3.min',
     'ethereumjs-util': 'assets/js/ethereumjs-util',
     'contenthash-signer-ens': 'js/index',
     'cids': 'node_modules/cids/dist/index'
@@ -87,7 +89,7 @@ require(
       document.getElementById('signResult').value = '';
 
       try {
-        var web3 = new Web3();
+        var web3 = new Web3('http://localhost:8545'); // dummy provider
         var accountSign = web3.eth.accounts.privateKeyToAccount('0x' + document.getElementById('signPrivateKey').value.replace(/^0x/,''));
         var cid = document.getElementById('signCid').value;
         var versionString = document.getElementById('signVersion').value;
@@ -103,7 +105,7 @@ require(
         document.getElementById('signResult').value = JSON.stringify(signatureData, null, 2);
       
       } catch(err) {
-        document.getElementById('signResult').value = 'Error';
+        document.getElementById('signResult').value = 'Error: ' + err;
       }
     };
 
@@ -120,7 +122,7 @@ require(
         document.getElementById('validateResult').value = (success? 'Validation success': 'Validation error');
       
       } catch (err){
-        document.getElementById('validateResult').value = 'Error';
+        document.getElementById('validateResult').value = 'Error: ' + err;
       }
     };
 

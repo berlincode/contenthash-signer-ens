@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <title>Contenthash converter</title>
 
-    <script type="text/javascript" src="assets/js/require.js"></script>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+
+    <script type="text/javascript" src="node_modules/requirejs/require.js"></script>
 
     <style>
 input[type='text']{ 
@@ -49,7 +51,7 @@ input[type='text']{
 
 require.config({
   paths: {
-    'web3': 'assets/js/web3',
+    'web3': 'assets/js/web3.min',
     'ethereumjs-util': 'assets/js/ethereumjs-util',
     'contenthash-signer-ens': 'js/index',
     'cids': 'node_modules/cids/dist/index'
@@ -92,7 +94,7 @@ require(
 
         document.getElementById('convert0Result').value = cidToInfoString(cid);
       } catch (err) {
-        document.getElementById('convert0Result').value = 'Error';
+        document.getElementById('convert0Result').value = 'Error: ' + err;
       }
     };
 
@@ -108,7 +110,7 @@ require(
 
         document.getElementById('convert1Result').value = cidToInfoString(cid);
       } catch (err) {
-        document.getElementById('convert1Result').value = 'Error';
+        document.getElementById('convert1Result').value = 'Error: ' + err;
       }
     };
   }
