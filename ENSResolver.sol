@@ -12,13 +12,13 @@
  Contact:
  elastic.code@gmail.com
 
- Version 0.6.1
+ Version 0.6.2
 
  This contract acts as a ens resolver.
  Implements contenthash field for ENS (EIP 1577) (https://eips.ethereum.org/EIPS/eip-1577).
 */
 
-pragma solidity 0.5.8;
+pragma solidity 0.5.10;
 pragma experimental ABIEncoderV2;
 
 interface ENS {
