@@ -1,8 +1,8 @@
 diff --git a/node_modules/web3-providers/dist/web3-providers.cjs.js b/node_modules/web3-providers/dist/web3-providers.cjs.js
-index f124c4a..5862409 100644
+index 70d6cd3..bcc25dd 100644
 --- a/node_modules/web3-providers/dist/web3-providers.cjs.js
 +++ b/node_modules/web3-providers/dist/web3-providers.cjs.js
-@@ -407,7 +407,8 @@ function (_AbstractSocketProvid) {
+@@ -411,7 +411,8 @@ function (_AbstractSocketProvid) {
      key: "onError",
      value: function onError(event) {
        if (event.code === 'ECONNREFUSED') {
@@ -12,7 +12,7 @@ index f124c4a..5862409 100644
          return;
        }
        _get(_getPrototypeOf(WebsocketProvider.prototype), "onError", this).call(this, event);
-@@ -416,8 +417,8 @@ function (_AbstractSocketProvid) {
+@@ -420,8 +421,8 @@ function (_AbstractSocketProvid) {
      key: "onClose",
      value: function onClose(closeEvent) {
        if (closeEvent.code !== 1000 || closeEvent.wasClean === false) {
@@ -24,10 +24,10 @@ index f124c4a..5862409 100644
        _get(_getPrototypeOf(WebsocketProvider.prototype), "onClose", this).call(this);
      }
 diff --git a/node_modules/web3-providers/dist/web3-providers.esm.js b/node_modules/web3-providers/dist/web3-providers.esm.js
-index 6d921d2..4efc999 100644
+index e3336bb..6305aa8 100644
 --- a/node_modules/web3-providers/dist/web3-providers.esm.js
 +++ b/node_modules/web3-providers/dist/web3-providers.esm.js
-@@ -249,15 +249,16 @@ class WebsocketProvider extends AbstractSocketProvider {
+@@ -253,15 +253,16 @@ class WebsocketProvider extends AbstractSocketProvider {
    }
    onError(event) {
      if (event.code === 'ECONNREFUSED') {
@@ -48,10 +48,10 @@ index 6d921d2..4efc999 100644
      super.onClose();
    }
 diff --git a/node_modules/web3-providers/dist/web3-providers.umd.js b/node_modules/web3-providers/dist/web3-providers.umd.js
-index 1e2b02a..2e1c306 100644
+index 4815147..fbf7fe4 100644
 --- a/node_modules/web3-providers/dist/web3-providers.umd.js
 +++ b/node_modules/web3-providers/dist/web3-providers.umd.js
-@@ -405,7 +405,8 @@
+@@ -409,7 +409,8 @@
          key: "onError",
          value: function onError(event) {
            if (event.code === 'ECONNREFUSED') {
@@ -61,7 +61,7 @@ index 1e2b02a..2e1c306 100644
              return;
            }
            _get(_getPrototypeOf(WebsocketProvider.prototype), "onError", this).call(this, event);
-@@ -414,8 +415,8 @@
+@@ -418,8 +419,8 @@
          key: "onClose",
          value: function onClose(closeEvent) {
            if (closeEvent.code !== 1000 || closeEvent.wasClean === false) {

@@ -54,7 +54,15 @@ function setup(done){
     ]
   };
 
-  web3 = new Web3(ganache.provider(options));
+  web3 = new Web3(
+    ganache.provider(options),
+    null, 
+    {
+      defaultBlock: 'latest',
+      transactionConfirmationBlocks: 1,
+      transactionBlockTimeout: 5
+    }
+  );
 
   accountSign = web3.eth.accounts.privateKeyToAccount('0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35');
 

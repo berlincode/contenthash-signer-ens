@@ -1,6 +1,6 @@
 {
   "name": "contenthash-signer-ens",
-  "version": "3.4.3",
+  "version": "3.4.4",
   "description": "Sign EIP-1577 compatible contenthashes (e.g. IPFS CIDs) hashes and content version (in an ethereum compatible way)",
   "homepage": "https://github.com/berlincode/contenthash-signer-ens",
   "license": "MIT",
@@ -47,15 +47,15 @@
     "cids": "0.5.7",
     "ethereumjs-util": "^6.1.0",
     "patch-package": "6.1.2",
-    "web3": "1.0.0-beta.55"
+    "web3": "2.0.0-alpha"
   },
   "devDependencies": {
     "bootstrap": "^3.4.1",
     "eth-ens-namehash": "^2.0.8",
-    "eslint": "^5.16.0",
-    "eslint-plugin-html": "^5.0.0",
+    "eslint": "^6.1.0",
+    "eslint-plugin-html": "^6.0.0",
     "eslint-plugin-ie11": "^1.0.0",
-    "ganache-core": "2.5.6",
+    "ganache-core": "2.6.1",
     "minimist": "^1.2.0",
     "mocha": "^6.0.2",
     "requirejs": "2.3.6",

@@ -1,8 +1,8 @@
 diff --git a/node_modules/ganache-core/lib/subproviders/geth_api_double.js b/node_modules/ganache-core/lib/subproviders/geth_api_double.js
-index 8aa9f4b..0b01f8a 100644
+index f56afe6..56c6bed 100644
 --- a/node_modules/ganache-core/lib/subproviders/geth_api_double.js
 +++ b/node_modules/ganache-core/lib/subproviders/geth_api_double.js
-@@ -157,6 +157,12 @@ GethApiDouble.prototype.eth_hashrate = function(callback) {
+@@ -164,6 +164,12 @@ GethApiDouble.prototype.eth_hashrate = function(callback) {
    callback(null, "0x0");
  };
  

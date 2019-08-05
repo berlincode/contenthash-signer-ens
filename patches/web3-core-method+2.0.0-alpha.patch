@@ -1,5 +1,5 @@
 diff --git a/node_modules/web3-core-method/dist/web3-core-method.cjs.js b/node_modules/web3-core-method/dist/web3-core-method.cjs.js
-index 5b312e6..c5fa6d7 100644
+index 38d91e0..5e8b7e3 100644
 --- a/node_modules/web3-core-method/dist/web3-core-method.cjs.js
 +++ b/node_modules/web3-core-method/dist/web3-core-method.cjs.js
 @@ -1064,6 +1064,10 @@ function (_AbstractMethod) {
@@ -14,10 +14,10 @@ index 5b312e6..c5fa6d7 100644
            _this2.handleError(error, receipt, confirmations);
          }, function () {
 diff --git a/node_modules/web3-core-method/dist/web3-core-method.esm.js b/node_modules/web3-core-method/dist/web3-core-method.esm.js
-index 65c09ee..5bb5d85 100644
+index 937d208..9ba8ad5 100644
 --- a/node_modules/web3-core-method/dist/web3-core-method.esm.js
 +++ b/node_modules/web3-core-method/dist/web3-core-method.esm.js
-@@ -650,6 +650,10 @@ class AbstractObservedTransactionMethod extends AbstractMethod {
+@@ -653,6 +653,10 @@ class AbstractObservedTransactionMethod extends AbstractMethod {
            return;
          }
          this.promiEvent.emit('confirmation', confirmations, this.formatters.outputTransactionFormatter(receipt));
@@ -29,7 +29,7 @@ index 65c09ee..5bb5d85 100644
          this.handleError(error, receipt, confirmations);
        }, () => {
 diff --git a/node_modules/web3-core-method/dist/web3-core-method.umd.js b/node_modules/web3-core-method/dist/web3-core-method.umd.js
-index 2e6eea0..ae9694c 100644
+index 13aa9a8..042a3da 100644
 --- a/node_modules/web3-core-method/dist/web3-core-method.umd.js
 +++ b/node_modules/web3-core-method/dist/web3-core-method.umd.js
 @@ -1062,6 +1062,10 @@
