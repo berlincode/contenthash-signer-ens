@@ -1,6 +1,6 @@
 {
   "name": "contenthash-signer-ens",
-  "version": "3.4.4",
+  "version": "4.1.0",
   "description": "Sign EIP-1577 compatible contenthashes (e.g. IPFS CIDs) hashes and content version (in an ethereum compatible way)",
   "homepage": "https://github.com/berlincode/contenthash-signer-ens",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "scripts": {
     "compile": "solcjs --optimize --bin --abi ENSResolver.sol",
     "compile-test-contract": "cd test/contracts && solcjs --optimize --bin --abi ENSRegistry.sol",
-    "ethlint": "solium --file IpfsSigner.sol",
+    "ethlint": "solium --file ENSResolver.sol",
     "test": "mocha",
     "eslint": "eslint ./js/*.js ./test/*.js ./examples/*.js ./*.html",
     "gh_pages_dist": "rm -rf dist && mkdir dist && cp *.html dist && cp -r js dist && cp -r assets dist && mkdir -p dist/node_modules/cids/dist/ dist/node_modules/requirejs/ dist/node_modules/bootstrap/dist/css/ && cp node_modules/cids/dist/index.js dist/node_modules/cids/dist/ && cp node_modules/requirejs/require.js dist/node_modules/requirejs && cp node_modules/bootstrap/dist/css/bootstrap.min.css dist/node_modules/bootstrap/dist/css/",
@@ -47,7 +47,7 @@
     "cids": "0.5.7",
     "ethereumjs-util": "^6.1.0",
     "patch-package": "6.1.2",
-    "web3": "2.0.0-alpha"
+    "web3": "2.0.0-alpha.1"
   },
   "devDependencies": {
     "bootstrap": "^3.4.1",
@@ -57,7 +57,7 @@
     "eslint-plugin-ie11": "^1.0.0",
     "ganache-core": "2.6.1",
     "minimist": "^1.2.0",
-    "mocha": "^6.0.2",
+    "mocha": "^6.2.0",
     "requirejs": "2.3.6",
     "solc": "0.5.10",
     "ethlint": "^1.2.4"

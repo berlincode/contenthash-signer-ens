@@ -19,13 +19,13 @@ const contractInterface = JSON.parse(
 );
 
 var argv = minimist(process.argv.slice(2), {
-  string: ['resolver', 'signaturefile', 'name'],
+  string: ['resolver', 'signaturefile'],
   boolean: ['noninteractive']
 });
 
 if (argv._.length !== 1){
   console.log('usage:');
-  console.log('    update_resolver.js <geth-provider> --resolver=<resolver-addr> --signaturefile=<json-signature-file> --name=<your.name.eth>');
+  console.log('    update_resolver.js <geth-provider> --resolver=<resolver-addr> --signaturefile=<json-signature-file>');
   console.log('');
   console.log('example (bash):');
   console.log('    ./update_resolver.js https://mainnet.infura.io/<your-token> --resolver=0x... --signaturefile=SIGNATURE.json --noninteractive <<< 0x88779b7111e6e83ecc8fdb173f017262eff4180e61967ac2b12c4bcf6d9df1a1');
@@ -35,8 +35,9 @@ if (argv._.length !== 1){
 const provider = argv._[0];
 const resolverAddr = argv.resolver;
 const signaturefile = argv.signaturefile;
-const node = namehash.hash(argv.name);
 const noninteractive = argv.noninteractive;
+
+const node = namehash.hash('dummy.eth'); // node is ignored by contract
 
 const signatureData = JSON.parse(
   fs.readFileSync(
@@ -59,7 +60,6 @@ async function updateContenthash(privateKey){
   }
 
   await contractInstanceResolver.methods.setContenthashBySignature(
-    node,
     signatureData.contenthash,
     signatureData.version,
     signatureData.sig

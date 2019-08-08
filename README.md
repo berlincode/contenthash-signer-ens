@@ -12,7 +12,7 @@ be used with ipfs CIDs, so that you can directly access the signed content on an
 Check out our [online example](https://berlincode.github.io/contenthash-signer-ens/sign_validate.html).
 
 Additionally there is a solidity resolver contract which works directly with the signatures created by contenthash-signer-ens.
-The contract can be updated by anybody with a valid signature and stored only the most recent ipfs cid (based on the
+The contract can be updated by anybody with a valid signature. It stores only the most recent ipfs cid (based on the
 signed version number).
 
 Example usage:

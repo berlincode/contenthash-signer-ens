@@ -1,5 +1,5 @@
 /*
- ENS Contanthash resolver (EIP-1577) wich may be updated with signatures from contenthash-signer-ens
+ ENS Contanthash resolver (EIP-1577) which may be updated with signatures from contenthash-signer-ens
 
 
  Copyright (c) Ulf Bartel
@@ -12,15 +12,16 @@
  Contact:
  elastic.code@gmail.com
 
- Version 0.6.2
+ Version 4.1.0
 
- This contract acts as a ens resolver.
+ This contract acts as a ens resolver. It always serves only one contenthash (for all nodes).
  Implements contenthash field for ENS (EIP 1577) (https://eips.ethereum.org/EIPS/eip-1577).
 */
 
 pragma solidity 0.5.10;
 pragma experimental ABIEncoderV2;
 
+/*
 interface ENS {
 
     // Logged when the owner of a node assigns a new owner to a subnode.
@@ -44,20 +45,21 @@ interface ENS {
     function resolver(bytes32 node) external view returns (address);
     function ttl(bytes32 node) external view returns (uint64);
 }
+*/
 
 
 contract ResolverContenthashSignerENS {
 
     /* public constant contractVersion */
-    uint64 public constant contractVersion = (
-        (0 << 32) + /* major */
-        (5 << 16) + /* minor */
+    uint64 public constant CONTRACT_VERSION = (
+        (4 << 32) + /* major */
+        (1 << 16) + /* minor */
         0 /* bugfix */
     );
 
     bytes4 constant CONTENTHASH_INTERFACE_ID = 0xbc1c58d1;
 
-    event ContenthashChanged(bytes32 indexed node, bytes hash);
+    event ContenthashChanged(bytes hash);
 
     struct Signature {
         uint8 v;
@@ -70,21 +72,16 @@ contract ResolverContenthashSignerENS {
         bytes contenthash;
     }
 
-    ENS ens;
+    address signer; /* signer address */
 
-    mapping (bytes32 => Record) records;
-
-    modifier onlyOwner(bytes32 node) {
-        require(ens.owner(node) == msg.sender);
-        _;
-    }
+    Record record;
 
     /**
      * Constructor.
-     * @param ensAddr The ENS registrar contract.
+     * @param signerAddr The signer address.
      */
-    constructor(ENS ensAddr) public {
-        ens = ensAddr;
+    constructor(address signerAddr) public {
+        signer = signerAddr;
     }
 
     /**
@@ -93,18 +90,14 @@ contract ResolverContenthashSignerENS {
      * @param node The node to update.
      * @param hash The contenthash to set
      */
-    function setContenthash(bytes32 node, bytes calldata hash) external onlyOwner(node) {
-        records[node].contenthash = hash;
-        // set version to 0xffffffffffffffff if contenthash is set directly by owner
-        records[node].version = 0xffffffffffffffff;
-        emit ContenthashChanged(node, hash);
+    /*
+    function setContenthash(bytes32 node, bytes calldata hash) external {
+        require(
+            false,
+            "Function call not supported"
+        );
     }
-
-    function clearContenthash(bytes32 node) external onlyOwner(node) {
-        records[node].contenthash = "";
-        records[node].version = 0x0;
-        emit ContenthashChanged(node, "");
-    }
+    */
 
     /**
      * Returns the contenthash associated with an ENS node.
@@ -112,7 +105,7 @@ contract ResolverContenthashSignerENS {
      * @return The associated contenthash.
      */
     function contenthash(bytes32 node) external view returns (bytes memory) {
-        return records[node].contenthash;
+        return record.contenthash;
     }
 
     /**
@@ -127,20 +120,18 @@ contract ResolverContenthashSignerENS {
     /**
      * Sets the contenthash associated with an ENS node using a prebuild signature.
      * May be called by anyone with a valid signature.
-     * @param node The node to update.
      * @param hash The contenthash to set
      * @param version The version (which is part of the signature)
      * @param signature The signature over the keccak256(hash, version)
      */
     function setContenthashBySignature (
-        bytes32 node,
         bytes memory hash,
         uint64 version,
         Signature memory signature
     ) public
     {
         require(
-            ens.owner(node) == verify(
+            signer == verify(
                 keccak256(
                     abi.encodePacked(
                         hash,
@@ -148,14 +139,15 @@ contract ResolverContenthashSignerENS {
                     )
                 ),
                 signature
-            )
+            ),
+            "Invalid signature"
         );
 
         // update only if new version is higher than current version
-        if (version > records[node].version) {
-            records[node].contenthash = hash;
-            records[node].version = version;
-            emit ContenthashChanged(node, hash);
+        if (version > record.version) {
+            record.contenthash = hash;
+            record.version = version;
+            emit ContenthashChanged(hash);
         }
     }
 
@@ -173,13 +165,12 @@ contract ResolverContenthashSignerENS {
                 _message
             )
         );
-        address signer = ecrecover(
+        return ecrecover(
             prefixedHash,
             signature.v,
             signature.r,
             signature.s
         );
-        return signer;
     }
 
 }

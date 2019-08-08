@@ -23,21 +23,21 @@ const contractBytecode = fs.readFileSync(
 );
 
 var argv = minimist(process.argv.slice(2), {
-  string: ['registry'],
+  string: ['signeraddress'],
   boolean: ['noninteractive']
 });
 
-if ((argv._.length !== 1) || (!argv.registry)){
+if ((argv._.length !== 1) || (!argv.signeraddress)){
   console.log('usage:');
-  console.log('    deploy_resolver.js <geth-provider> --registry=<registry-addr>');
+  console.log('    resolver_deploy.js <geth-provider> --signeraddress=<signer address>');
   console.log('');
   console.log('example (bash):');
-  console.log('    ./deploy_resolver.js https://mainnet.infura.io/<your-token> --registry=0x314159265dd8dbb310642f98f50c066173c1259b --noninteractive <<< 0x88779b7111e6e83ecc8fdb173f017262eff4180e61967ac2b12c4bcf6d9df1a1');
+  console.log('    ./resolver_deploy.js https://mainnet.infura.io/<your-token> --signeraddress=0x..... --noninteractive <<< 0x88779b7111e6e83ecc8fdb173f017262eff4180e61967ac2b12c4bcf6d9df1a1');
   process.exit(1);
 }
 
 const provider = argv._[0];
-const registryAddr = argv.registry;
+const signerAddr = argv.signeraddress;
 const noninteractive = argv.noninteractive;
 
 const web3 = new Web3(provider);
@@ -52,7 +52,7 @@ async function deploy(privateKey){
     {
       data: '0x' + contractBytecode,
       arguments: [
-        registryAddr
+        signerAddr
       ]
     }
   )

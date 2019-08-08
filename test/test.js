@@ -37,11 +37,11 @@ const contractBytecodeRegistry = fs.readFileSync(
   {encoding: 'utf8'}
 );
 
-const nodeDefault = namehash.hash('eth');
-const nodeBySignature = namehash.hash('ethsig');
+//const nodeDefault = namehash.hash('eth');
+const nodeBySignature = namehash.hash('ethsig'); // just a dummy
 
 var web3;
-var accountSign, accountDefault;
+var accountSign, accountNodeOwner, accountDefault;
 
 
 function setup(done){
@@ -64,6 +64,7 @@ function setup(done){
     }
   );
 
+  accountNodeOwner = web3.eth.accounts.privateKeyToAccount('0xfbcbb526c979912fb11b8f3ac555da4676e32bcf1388991e4c33b2b980bbc3c4');
   accountSign = web3.eth.accounts.privateKeyToAccount('0xdc68bd96144c2963602d86b054ad67fd62d488edd78fecf44aa8d8cd90d59f35');
 
   web3.eth.getAccounts()
@@ -117,7 +118,7 @@ describe('Test contract and signature', function() {
         {
           data: contractBytecode,
           arguments: [
-            contractInstanceRegistry.options.address
+            accountSign.address
           ]
         }
       )
@@ -137,7 +138,7 @@ describe('Test contract and signature', function() {
           from: accountDefault
         });
 
-      await contractInstanceRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000', sha3('ethsig'), accountSign.address)
+      await contractInstanceRegistry.methods.setSubnodeOwner('0x0000000000000000000000000000000000000000000000000000000000000000', sha3('ethsig'), accountNodeOwner.address)
         .send({
           gas: 4000000,
           gasPrice: '30000000000000',
@@ -167,7 +168,6 @@ describe('Test contract and signature', function() {
 
     it('Set contenthash by signature in contract', function() {
       return contractInstanceResolver.methods.setContenthashBySignature(
-        nodeBySignature,
         signatureData.contenthash,
         signatureData.version,
         signatureData.sig
@@ -211,6 +211,7 @@ describe('Test contract and signature', function() {
 
   describe('contenthash', async () => {
 
+    /*
     it('permits setting contenthash by owner', async () => {
       await contractInstanceResolver.methods.setContenthash(nodeDefault, '0x0000000000000000000000000000000000000000000000000000000000000001')
         .send({
@@ -220,7 +221,9 @@ describe('Test contract and signature', function() {
         });
       assert.equal(await contractInstanceResolver.methods.contenthash(nodeDefault).call(), '0x0000000000000000000000000000000000000000000000000000000000000001');
     });
+    */
 
+    /*
     it('can overwrite previously set contenthash', async () => {
       await contractInstanceResolver.methods.setContenthash(nodeDefault, '0x0000000000000000000000000000000000000000000000000000000000000001')
         .send({
@@ -239,6 +242,7 @@ describe('Test contract and signature', function() {
 
       assert.equal(await contractInstanceResolver.methods.contenthash(nodeDefault).call(), '0x0000000000000000000000000000000000000000000000000000000000000002');
     });
+    */
 
     /*
     it('can overwrite to same contenthash', async () => {
@@ -272,11 +276,13 @@ describe('Test contract and signature', function() {
     });
     */
 
+    /*
     it('returns empty when fetching nonexistent contenthash', async () => {
       assert.equal(
         await contractInstanceResolver.methods.contenthash(namehash.hash('unknown')).call(),
         '0x'// TODO null
       );
     });
+    */
   });
 });

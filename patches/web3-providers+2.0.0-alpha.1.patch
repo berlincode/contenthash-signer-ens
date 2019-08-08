@@ -1,40 +1,41 @@
 diff --git a/node_modules/web3-providers/dist/web3-providers.cjs.js b/node_modules/web3-providers/dist/web3-providers.cjs.js
-index 70d6cd3..bcc25dd 100644
+index 40b432f..699d9dc 100644
 --- a/node_modules/web3-providers/dist/web3-providers.cjs.js
 +++ b/node_modules/web3-providers/dist/web3-providers.cjs.js
-@@ -411,7 +411,8 @@ function (_AbstractSocketProvid) {
+@@ -473,8 +473,8 @@ function (_AbstractSocketProvid) {
      key: "onError",
      value: function onError(event) {
        if (event.code === 'ECONNREFUSED') {
 -        this.reconnect();
-+//        this.reconnect();
-+        _get(_getPrototypeOf(WebsocketProvider.prototype), "onClose", this).call(this, event);
-         return;
+-        return;
++        //this.reconnect();
++        //return;
        }
        _get(_getPrototypeOf(WebsocketProvider.prototype), "onError", this).call(this, event);
-@@ -420,8 +421,8 @@ function (_AbstractSocketProvid) {
+     }
+@@ -482,8 +482,8 @@ function (_AbstractSocketProvid) {
      key: "onClose",
      value: function onClose(closeEvent) {
        if (closeEvent.code !== 1000 || closeEvent.wasClean === false) {
 -        this.reconnect();
 -        return;
-+//        this.reconnect();
-+//        return;
++        //this.reconnect();
++        //return;
        }
        _get(_getPrototypeOf(WebsocketProvider.prototype), "onClose", this).call(this);
      }
 diff --git a/node_modules/web3-providers/dist/web3-providers.esm.js b/node_modules/web3-providers/dist/web3-providers.esm.js
-index e3336bb..6305aa8 100644
+index 787f738..056ecea 100644
 --- a/node_modules/web3-providers/dist/web3-providers.esm.js
 +++ b/node_modules/web3-providers/dist/web3-providers.esm.js
-@@ -253,15 +253,16 @@ class WebsocketProvider extends AbstractSocketProvider {
+@@ -269,15 +269,15 @@ class WebsocketProvider extends AbstractSocketProvider {
    }
    onError(event) {
      if (event.code === 'ECONNREFUSED') {
 -      this.reconnect();
-+//      this.reconnect();
-+      super.onClose();
-       return;
+-      return;
++      //this.reconnect();
++      //return;
      }
      super.onError(event);
    }
@@ -42,33 +43,34 @@ index e3336bb..6305aa8 100644
      if (closeEvent.code !== 1000 || closeEvent.wasClean === false) {
 -      this.reconnect();
 -      return;
-+//      this.reconnect();
-+//      return;
++      //this.reconnect();
++      //return;
      }
      super.onClose();
    }
 diff --git a/node_modules/web3-providers/dist/web3-providers.umd.js b/node_modules/web3-providers/dist/web3-providers.umd.js
-index 4815147..fbf7fe4 100644
+index 1b2edf5..b7220e0 100644
 --- a/node_modules/web3-providers/dist/web3-providers.umd.js
 +++ b/node_modules/web3-providers/dist/web3-providers.umd.js
-@@ -409,7 +409,8 @@
+@@ -471,8 +471,8 @@
          key: "onError",
          value: function onError(event) {
            if (event.code === 'ECONNREFUSED') {
 -            this.reconnect();
-+//            this.reconnect();
-+            _get(_getPrototypeOf(WebsocketProvider.prototype), "onClose", this).call(this);
-             return;
+-            return;
++            //this.reconnect();
++            //return;
            }
            _get(_getPrototypeOf(WebsocketProvider.prototype), "onError", this).call(this, event);
-@@ -418,8 +419,8 @@
+         }
+@@ -480,8 +480,8 @@
          key: "onClose",
          value: function onClose(closeEvent) {
            if (closeEvent.code !== 1000 || closeEvent.wasClean === false) {
 -            this.reconnect();
 -            return;
-+//            this.reconnect();
-+//            return;
++            //this.reconnect();
++            //return;
            }
            _get(_getPrototypeOf(WebsocketProvider.prototype), "onClose", this).call(this);
          }
