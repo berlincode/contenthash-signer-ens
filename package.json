@@ -10,7 +10,7 @@
     "email": "elastic.code@gmail.com"
   },
   "scripts": {
-    "compile": "solcjs --optimize --bin --abi ENSResolver.sol",
+    "compile": "rimraf ENSResolver_sol_ResolverContenthashSignerENS.* && solcjs --optimize --bin --abi ENSResolver.sol",
     "compile-test-contract": "cd test/contracts && solcjs --optimize --bin --abi ENSRegistry.sol",
     "ethlint": "solium --file ENSResolver.sol",
     "test": "mocha",
@@ -46,20 +46,21 @@
   "dependencies": {
     "cids": "0.5.7",
     "ethereumjs-util": "^6.1.0",
-    "patch-package": "6.1.2",
+    "patch-package": "~6.2.1",
     "web3": "2.0.0-alpha.1"
   },
   "devDependencies": {
-    "bootstrap": "^3.4.1",
-    "eth-ens-namehash": "^2.0.8",
-    "eslint": "^6.1.0",
+    "bootstrap": "^4.3.1",
+    "eslint": "^6.8.0",
     "eslint-plugin-html": "^6.0.0",
     "eslint-plugin-ie11": "^1.0.0",
-    "ganache-core": "2.6.1",
+    "eth-ens-namehash": "^2.0.8",
+    "ethlint": "^1.2.5",
+    "ganache-core": "2.10.2",
     "minimist": "^1.2.0",
-    "mocha": "^6.2.0",
+    "mocha": "^7.0.0",
     "requirejs": "2.3.6",
-    "solc": "0.5.10",
-    "ethlint": "^1.2.4"
+    "rimraf": "~3.0.0",
+    "solc": "0.6.4"
   }
 }

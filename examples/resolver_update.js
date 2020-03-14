@@ -56,6 +56,7 @@ async function updateContenthash(privateKey){
 
   if (signatureData.contenthash == await contractInstanceResolver.methods.contenthash(node).call()){
     // nothing to to
+    console.log('contenthash already up to date');
     return;
   }
 
@@ -66,8 +67,8 @@ async function updateContenthash(privateKey){
   )
     .send(
       {
-        gas: 1000000,
-        gasPrice: 10000000000, // TODO
+        gas: 180000, // ~ 60000 for a normal update
+        //gasPrice: 18000000000, // 18 gwei
         from: account.address
       }
     );

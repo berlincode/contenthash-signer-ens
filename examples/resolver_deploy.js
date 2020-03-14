@@ -58,8 +58,8 @@ async function deploy(privateKey){
   )
     .send(
       {
-        gas: 4000000,
-        gasPrice: 10000000000, // TODO
+        gas: 1000000, // ~650000 gas for contract creation
+        //gasPrice: 18000000000, // 18 gwei
         from: account.address
       }
     );

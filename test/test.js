@@ -56,7 +56,7 @@ function setup(done){
 
   web3 = new Web3(
     ganache.provider(options),
-    null, 
+    null,
     {
       defaultBlock: 'latest',
       transactionConfirmationBlocks: 1,

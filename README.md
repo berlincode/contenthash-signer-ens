@@ -1,8 +1,9 @@
 Contenthash-Signer-ENS
 ======================
 
-[![Travis CI](https://travis-ci.org/berlincode/contenthash-signer-ens.svg?branch=master&style=flat)](https://travis-ci.org/berlincode/contenthash-signer-ens)
+[![Version](https://img.shields.io/github/v/tag/berlincode/contenthash-signer-ens.svg?label=version&sort=semver&logo=github)](https://github.com/berlincode/contenthash-signer-ens)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/berlincode/contenthash-signer-ens/blob/master/LICENSE)
+[![Travis CI](https://travis-ci.org/berlincode/contenthash-signer-ens.svg?branch=master&style=flat)](https://travis-ci.org/berlincode/contenthash-signer-ens)
 
 **Sign ipfs CID hashes and content version (in an ethereum compatible way)**
 
