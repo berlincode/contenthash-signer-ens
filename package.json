@@ -29,7 +29,7 @@
     "js/*",
     "LICENSE",
     "patches/*.patch",
-    "README"
+    "README.md"
   ],
   "repository": {
     "type": "git",
