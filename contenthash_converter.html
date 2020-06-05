@@ -11,14 +11,24 @@
 
     <style>
 input[type='text']{ 
-    width: 775px;
+  width: 775px;
 }
+input, textarea{
+  max-width: 100%;
+} 
     </style>
 </head>
 <body>
+  <div style="width: 100%; padding-right: 15px; padding-left: 15px; max-width: 960px; margin-right: auto; margin-left: auto;">
     <h1>Contenthash converter</h1>
+
+    <p>
+        This online example is part of <a href="https://github.com/berlincode/contenthash-signer-ens">https://github.com/berlincode/contenthash-signer-ens</a>
+    </p>
+
     <p>
         This tool converts between IPFS CIDs and multicodec contenthashes as used in ens resolvers. It should be conform to <a href="https://eips.ethereum.org/EIPS/eip-1577">ethereum EIP 1577</a>.
+        There is a companion tool to <a href="sign_validate.html">sign and validate IPFS contenthash sigantures</a>.
     </p>
 
     <h2>Convert IPFS CID to CID0 and CID1 and contenthash</h2>
@@ -47,7 +57,8 @@ input[type='text']{
     Result:<br/>
     <textarea id="convert1Result" rows="9" cols="100"></textarea>
 
-    <script>
+  </div>
+  <script>
 
 require.config({
   paths: {
@@ -116,6 +127,6 @@ require(
   }
 );
 
-    </script>
+  </script>
 </body>
 </html>

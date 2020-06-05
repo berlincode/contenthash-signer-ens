@@ -13,12 +13,16 @@
 input[type='text']{ 
     width: 775px;
 }
+input, textarea{
+  max-width: 100%;
+} 
     </style>
 </head>
 <body>
+  <div style="width: 100%; padding-right: 15px; padding-left: 15px; max-width: 960px; margin-right: auto; margin-left: auto;">
     <h1>Contenthash-Signer-ENS Example</h1>
     <p>
-        This is the online example of <a href="https://github.com/berlincode/contenthash-signer-ens">https://github.com/berlincode/contenthash-signer-ens</a>
+        This online example is part of <a href="https://github.com/berlincode/contenthash-signer-ens">https://github.com/berlincode/contenthash-signer-ens</a>
     </p>
 
     <p>
@@ -64,7 +68,8 @@ input[type='text']{
     Result:<br/>
     <textarea id="validateResult" rows="1" cols="100"></textarea>
 
-    <script>
+  </div>
+  <script>
 
 require.config({
   paths: {
@@ -129,6 +134,6 @@ require(
   }
 );
 
-    </script>
+  </script>
 </body>
 </html>

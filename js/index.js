@@ -43,7 +43,7 @@
       versionString = versionString.substring(1);
 
     if (! /^[0-9.]*$/.test(versionString))
-      throw 'invalid char in version';
+      throw new Error('invalid char in version');
 
     var fragments = versionString.split('.');
     if (fragments.length > 4)
@@ -58,7 +58,7 @@
     for (i=0 ; i < fragments.length ; i++){
       var fragmentInt = Number(fragments[i]);
       if (fragmentInt > 0xffff)
-        throw 'version fragment > 0xffff';
+        throw new Error('version fragment > 0xffff');
       versionBn = versionBn.mul(web3.utils.toBN('0x10000'));
       versionBn = versionBn.add(web3.utils.toBN(fragmentInt));
     }
@@ -152,7 +152,7 @@
     contenthash = contenthash.replace(/^0x/, '');
 
     if (contenthash.substring(0,4).toLowerCase() !== storageSystemHexIPFS)
-      throw 'first byte of contenthash must be 0x' + storageSystemHexIPFS;
+      throw new Error('first byte of contenthash must be 0x' + storageSystemHexIPFS);
 
     // remove byte for storage system
     contenthash = contenthash.substr(4);
