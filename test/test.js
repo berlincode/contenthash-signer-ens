@@ -149,7 +149,7 @@ describe('Test contract and signature', function() {
     it('Check that no contenthash is returned from contract', async function() {
       const result = await contractInstanceResolver.methods.contenthash(nodeBySignature).call();
 
-      assert.equal(result, '0x'); // TODO null
+      assert.equal(result, null);
 
       //const version = Web3.utils.toBN(result.version);
       //assert.ok(version.isZero());
