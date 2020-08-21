@@ -40,7 +40,7 @@ const provider = argv._[0];
 const signerAddr = argv.signeraddress;
 const noninteractive = argv.noninteractive;
 
-const web3 = new Web3(provider);
+const web3 = new Web3(new Web3.providers.HttpProvider(provider));
 const contract = new web3.eth.Contract(contractInterface);
 
 
