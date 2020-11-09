@@ -102,7 +102,7 @@ contract ResolverContenthashSignerENS {
      * Constructor.
      * @param signerAddr The signer address.
      */
-    constructor(address signerAddr) public {
+    constructor(address signerAddr) {
         signer = signerAddr;
     }
 
