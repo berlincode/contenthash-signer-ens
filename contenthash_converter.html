@@ -86,8 +86,10 @@ require(
         'CID0: ' + cid.toV0().toBaseEncodedString('base58btc') + '\n' +
         'CID1: ' + cid.toV1().toBaseEncodedString('base58btc') + '\n' +
         '\n' +
-        'CID1 as hex: first char defines code which is always "f" for hex\n' +
-        'CID1 (hex): ' + cid.toV1().toBaseEncodedString('base16') + '\n' +
+        'CID1 as base16: first char defines code which is always "f" for base16\n' +
+        'CID1 (base16): ' + cid.toV1().toBaseEncodedString('base16') + '\n' +
+        'CID1 as base32: first char defines code which is always "b" for base32\n' +
+        'CID1 (base32): ' + cid.toV1().toBaseEncodedString('base32') + '\n' +
         '\n' +
         'Contenthash as multicodec <protoCode uvarint><value []byte> where 0xe3 means IPFS\n' +
         'contenthash (binary): ' + contenthashSignerEns.cidStringToContenthashHex(cid)
