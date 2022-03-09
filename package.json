@@ -14,7 +14,7 @@
     "compile-test-contract": "cd test/contracts && solcjs --optimize --bin --abi ENSRegistry.sol",
     "ethlint": "solium --file ENSResolver.sol",
     "test": "mocha",
-    "eslint": "eslint ./js/*.js ./test/*.js ./examples/*.js ./*.html",
+    "eslint": "eslint *.cjs ./js/*.js ./test/*.js ./examples ./*.html",
     "gh_pages_dist": "rm -rf dist && mkdir dist && cp *.html dist && cp -r js dist && cp -r assets dist && mkdir -p dist/node_modules/cids/dist/ dist/node_modules/requirejs/ dist/node_modules/bootstrap/dist/css/ && cp node_modules/cids/dist/index.js dist/node_modules/cids/dist/ && cp node_modules/requirejs/require.js dist/node_modules/requirejs && cp node_modules/bootstrap/dist/css/bootstrap.min.css dist/node_modules/bootstrap/dist/css/",
     "postinstall": "patch-package"
   },
@@ -53,7 +53,6 @@
     "bootstrap": "~4.6.0",
     "eslint": "^8.4.0",
     "eslint-plugin-html": "^6.0.0",
-    "eslint-plugin-ie11": "^1.0.0",
     "eth-ens-namehash": "^2.0.8",
     "ethlint": "^1.2.5",
     "ganache-core": "^2.11.0",
