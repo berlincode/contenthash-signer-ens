@@ -10,7 +10,7 @@
     "email": "elastic.code@gmail.com"
   },
   "scripts": {
-    "compile": "rimraf ENSResolver_sol_ResolverContenthashSignerENS.* && solcjs --optimize --bin --abi ENSResolver.sol",
+    "compile": "shx rm -rf ENSResolver_sol_ResolverContenthashSignerENS.* && solcjs --optimize --bin --abi ENSResolver.sol",
     "compile-test-contract": "cd test/contracts && solcjs --optimize --bin --abi ENSRegistry.sol",
     "ethlint": "solium --file ENSResolver.sol",
     "test": "mocha",
@@ -59,7 +59,7 @@
     "minimist": "^1.2.0",
     "mocha": "^9.0.0",
     "requirejs": "2.3.6",
-    "rimraf": "~3.0.0",
+    "shx": "^0.3.2",
     "solc": "~0.8.12"
   }
 }
