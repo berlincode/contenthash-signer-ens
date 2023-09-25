@@ -1,6 +1,6 @@
 {
   "name": "contenthash-signer-ens",
-  "version": "4.1.4",
+  "version": "4.1.5",
   "description": "Sign EIP-1577 compatible contenthashes (e.g. IPFS CIDs) hashes and content version (in an ethereum compatible way)",
   "homepage": "https://github.com/berlincode/contenthash-signer-ens",
   "license": "MIT",
@@ -46,8 +46,8 @@
   "dependencies": {
     "cids": "~1.1.9",
     "ethereumjs-util": "^7.1.4",
-    "patch-package": "^6.2.1",
-    "web3": "~1.8.0"
+    "patch-package": "^8.0.0",
+    "web3": "~1.10.0"
   },
   "devDependencies": {
     "bootstrap": "~4.6.0",

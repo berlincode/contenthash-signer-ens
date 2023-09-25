@@ -37,9 +37,6 @@ npm install
 
 
 
-The resolver is currently deployed at:
- * ropsten: 0xc42fb86610be1f03b366251353cb41475cfeab11
-
 Public repository
 -----------------
 
